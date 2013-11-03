@@ -1,0 +1,36 @@
+{
+  "name": "xcss",
+  "version": "0.0.0",
+  "description": "CSS toolset",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha ./specs/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "andreypopp/xcss"
+  },
+  "keywords": [
+    "css",
+    "preprocessor"
+  ],
+  "author": "Andrey Popp <8mayday@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dgraph": "~0.11.1",
+    "dgraph-css-import": "~0.3.0",
+    "through": "~2.3.4",
+    "stream-combiner": "0.0.2",
+    "css-pack": "git+https://github.com/andreypopp/css-pack",
+    "optimist": "~0.6.0",
+    "deps-topo-sort": "~0.2.0",
+    "rework-visit": "~1.0.0",
+    "css": "~1.4.4"
+  },
+  "devDependencies": {
+    "semver": "~2.2.1",
+    "jshint": "~2.3.0",
+    "mocha": "~1.14.0",
+    "stream-aggregate-promise": "~0.1.2"
+  }
+}

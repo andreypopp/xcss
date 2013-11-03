@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+// vim: set ft=javascript:
+
+var xcss      = require('./index');
+var optimist  = require('optimist')
+      .usage('Usage: xcss [options] entry')
+      .option('h', {
+        alias: 'help',
+        boolean: true,
+        describe: 'Show this message and exit'
+      })
+      .option('v', {
+        alias: 'version',
+        boolean: true,
+        describe: 'Print xcss version and exit'
+      })
+      .option('d', {
+        alias: 'debug',
+        boolean: true,
+        describe: 'Emit source maps'
+      })
+      .option('t', {
+        alias: 'transform',
+        describe: 'Apply transform'
+      });
+
+function error(msg, showHelp) {
+  if (showHelp)
+    optimist.showHelp();
+  console.warn('error: ', msg);
+  if (err.stack)
+    console.warn(msg.stack);
+  process.exit(1);
+}
+
+function pipe(a, b) {
+  a.on('error', function(err) {
+    error(err);
+  });
+  a.pipe(b);
+}
+
+var argv = optimist.argv;
+
+if (argv.help)
+  return optimist.showHelp();
+
+if (argv.version)
+  return console.log(require('./package.json').version);
+
+if (argv._.length === 0)
+  error('provide bundle entry module as an argument', true);
+
+pipe(xcss(argv._[0], argv), process.stdout);

@@ -1,0 +1,14 @@
+{
+  "undef": true,
+  "unused": "vars",
+  "asi": true,
+  "expr": true,
+  "globalstrict": true,
+  "globals": {
+    "Buffer": false,
+    "require": false,
+    "process": false,
+    "module": false,
+    "exports": false
+  }
+}

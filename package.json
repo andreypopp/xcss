@@ -1,0 +1,32 @@
+{
+  "name": "xcss",
+  "version": "0.0.0",
+  "description": "Programmable stylesheets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andreypopp/xcss.git"
+  },
+  "keywords": [
+    "xcss",
+    "css",
+    "preprocessor"
+  ],
+  "author": "Andrey Popp <8mayday@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andreypopp/xcss/issues"
+  },
+  "homepage": "https://github.com/andreypopp/xcss",
+  "dependencies": {
+    "css-parse": "~1.7.0",
+    "css-stringify": "~1.4.1",
+    "recast": "~0.5.7"
+  },
+  "devDependencies": {
+    "jspecs": "~0.2.0"
+  }
+}

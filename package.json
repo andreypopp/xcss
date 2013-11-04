@@ -1,7 +1,7 @@
 {
   "name": "xcss",
   "version": "0.0.0",
-  "description": "CSS toolset",
+  "description": "CSS bundler for modular UI components",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha ./specs/*.js"

@@ -24,8 +24,7 @@
     "css-pack": "~0.6.0",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
-    "rework-visit": "~1.0.0",
-    "css": "~1.4.4"
+    "rework-visit": "~1.0.0"
   },
   "devDependencies": {
     "semver": "~2.2.1",

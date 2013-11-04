@@ -6,7 +6,6 @@ var dgraph      = require('dgraph');
 var imports     = require('dgraph-css-import');
 var pack        = require('css-pack');
 var sort        = require('deps-topo-sort');
-var css         = require('css');
 
 /**
  * Resolve dependencies of a given CSS file and run a set of transforms over.

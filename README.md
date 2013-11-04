@@ -7,3 +7,17 @@ CSS bundler with the following features:
   * Source maps support.
   * Elimination of unused class rules (not implemented).
   * Compression of class names in selectors (not implemented).
+
+## Installation
+
+    % npm install xcss
+
+## Usage
+
+    Usage: xcss [options] entry
+
+    Options:
+      -h, --help       Show this message and exit
+      -v, --version    Print xcss version and exit
+      -d, --debug      Emit source maps
+      -t, --transform  Apply transform

@@ -20,6 +20,11 @@ var optimist  = require('optimist')
         boolean: true,
         describe: 'Emit source maps'
       })
+      .option('c', {
+        alias: 'compress',
+        boolean: true,
+        describe: 'Compress output'
+      })
       .option('t', {
         alias: 'transform',
         describe: 'Apply transform'

@@ -31,7 +31,7 @@ function bundle(opts) {
     .map(function(t) {
       return (typeof t === 'function') ? t : require(t);
     });
-  var packer = pack({sorted: true, debug: opts.debug});
+  var packer = pack({sorted: true, debug: opts.debug, compress: opts.compress});
   if (transforms.length > 0) {
     // we aggregate modules before piping to packer because transforms may have
     // effect modules which are previously seen, e.g. we can extend a selector

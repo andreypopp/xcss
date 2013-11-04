@@ -1,6 +1,6 @@
 {
   "name": "xcss",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "CSS bundler for modular UI components",
   "main": "index.js",
   "bin": {
@@ -23,9 +23,8 @@
   "dependencies": {
     "dgraph": "~0.11.1",
     "dgraph-css-import": "~0.5.0",
-    "through": "~2.3.4",
     "stream-combiner": "0.0.2",
-    "css-pack": "~0.7.0",
+    "css-pack": "~0.8.0",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
     "rework-visit": "~1.0.0",

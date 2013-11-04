@@ -1,0 +1,7 @@
+div .unused {
+  color: red;
+}
+
+div .used {
+  color: yellow;
+}

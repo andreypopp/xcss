@@ -7,36 +7,47 @@ function isString(obj) {
 }
 
 function classNames(s) {
-  return s.match(/\.[a-zA-Z0-9_\-]+/g).map(function(n) { return n.slice(1); });
+  return s.match(/\.[a-zA-Z0-9_\-]+/g);
 }
 
-function compress(s, map) {
+function compressWith(map, s) {
   return s.replace(/\.[a-zA-Z0-9_\-]+/g, function(m, c) {
-    var name = m.slice(1);
-    return '.' + (map[name] && isString(map[name]) ? map[name] : name);
+    return (map[m] && isString(map[m]) ? map[m] : m);
   });
 }
 
 module.exports = function(map) {
   function visit(node) {
+    var rmRules = [];
+
     node.rules.forEach(function(rule, rIdx) {
       if (rule.rules) {
         visit(rule)
       } else if (rule.selectors) {
-        rule.selectors.slice(0).forEach(function(s, sIdx) {
+        var rmSelectors = [];
+
+        rule.selectors.forEach(function(s, sIdx) {
           var names = classNames(s);
-          if (!names.some(function(n) { return map[n]; }))
-            rule.selectors.splice(sIdx, 1);
+          if (!names.every(function(n) { return map[n]; }))
+            rmSelectors.push(sIdx);
         });
 
-        rule.selectors = rule.selectors.map(function(s) {
-          return compress(s, map);
-        });
+        rmSelectors.reverse();
+        rmSelectors.forEach(function(idx) {
+          rule.selectors.splice(idx, 1);
+        })
+
+        rule.selectors = rule.selectors.map(compressWith.bind(null, map));
 
         if (rule.selectors.length === 0) {
-          node.rules.splice(rIdx);
+          rmRules.push(rIdx);
         }
       }
+    });
+
+    rmRules.reverse();
+    rmRules.forEach(function(idx) {
+      node.rules.splice(idx, 1);
     });
   }
   return function(mod, ctx) {

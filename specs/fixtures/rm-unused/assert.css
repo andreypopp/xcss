@@ -1,0 +1,13 @@
+div .used {
+  color: yellow;
+}
+
+.used {
+  color: white;
+}
+
+@media  {
+  .used {
+    color: gray;
+  }
+}

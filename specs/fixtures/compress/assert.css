@@ -1,0 +1,26 @@
+div .B {
+  color: red;
+}
+
+div .A {
+  color: yellow;
+}
+
+.B {
+  color: black;
+}
+
+.A {
+  color: white;
+}
+
+@media  {
+  .A > .B {
+    color: black;
+  }
+
+  .B,
+  .A {
+    color: gray;
+  }
+}

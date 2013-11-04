@@ -58,7 +58,7 @@ function compress(map) {
   var name = [65];
   var compressed = {};
   for (var k in map) {
-    compressed[k] = name.map(fromCharCode).join('');
+    compressed[k] = '.' + name.map(fromCharCode).join('');
     nextName(name);
   }
   return compressed;

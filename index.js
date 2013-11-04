@@ -15,7 +15,7 @@ var sort        = require('deps-topo-sort');
  */
 function xcss(entry, opts) {
   opts = opts || {};
-  var dgraphOptions = {transform: imports};
+  var dgraphOptions = {globalTransform: imports};
   return combine(dgraph(entry, dgraphOptions), bundle(opts));
 }
 

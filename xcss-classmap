@@ -5,7 +5,7 @@
 var fs        = require('fs');
 var classMap  = require('./classmap');
 var optimist  = require('optimist')
-      .usage('Usage: xcss-classmap [options] entry')
+      .usage('Usage: xcss-classmap [options] entry ...')
       .option('h', {
         alias: 'help',
         boolean: true,
@@ -39,7 +39,7 @@ if (argv.version)
   return console.log(require('./package.json').version);
 
 if (argv._.length === 0)
-  error('provide bundle entry module as an argument', true);
+  error('provide javascript source code to extract class map from', true);
 
 var result = {};
 argv._.forEach(function(f) {

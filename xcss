@@ -27,7 +27,7 @@ var optimist  = require('optimist')
         describe: 'Compress output'
       })
       .option('class-map', {
-        describe: 'Remove unused CSS rules and compress class names'
+        describe: 'Use class map to remove unused stylesheet rules'
       })
       .option('t', {
         alias: 'transform',

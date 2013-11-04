@@ -3,6 +3,10 @@
   "version": "0.3.0",
   "description": "CSS bundler for modular UI components",
   "main": "index.js",
+  "bin": {
+    "xcss": "./xcss",
+    "xcss-classmap": "./xcss-classmap"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha ./specs/*.js"
   },

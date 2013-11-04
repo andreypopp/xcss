@@ -18,10 +18,10 @@
   "license": "MIT",
   "dependencies": {
     "dgraph": "~0.11.1",
-    "dgraph-css-import": "~0.3.0",
+    "dgraph-css-import": "~0.5.0",
     "through": "~2.3.4",
     "stream-combiner": "0.0.2",
-    "css-pack": "git+https://github.com/andreypopp/css-pack",
+    "css-pack": "~0.6.0",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
     "rework-visit": "~1.0.0",

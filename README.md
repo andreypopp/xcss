@@ -5,7 +5,7 @@ CSS bundler with the following features:
   * Dependency resolution using Node module resolution algorithm.
   * Stylesheet AST transformations in spirit of rework.
   * Source maps support.
-  * Elimination of unused class rules (not implemented).
+  * Elimination of unused class rules.
   * Compression of class names in selectors (not implemented).
 
 ## Installation

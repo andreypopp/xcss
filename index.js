@@ -31,6 +31,10 @@ function bundle(opts) {
     .map(function(t) {
       return (typeof t === 'function') ? t : require(t);
     });
+
+  if (opts.classMap)
+    transforms.push(require('./transforms/classmap')(opts.classMap));
+
   var packer = pack({sorted: true, debug: opts.debug, compress: opts.compress});
   if (transforms.length > 0) {
     // we aggregate modules before piping to packer because transforms may have

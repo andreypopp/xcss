@@ -3,9 +3,9 @@
 // vim: set ft=javascript:
 
 var fs        = require('fs');
-var xcss      = require('./index');
+var classMap  = require('./classmap');
 var optimist  = require('optimist')
-      .usage('Usage: xcss [options] entry')
+      .usage('Usage: xcss-classmap [options] entry')
       .option('h', {
         alias: 'help',
         boolean: true,
@@ -16,22 +16,10 @@ var optimist  = require('optimist')
         boolean: true,
         describe: 'Print xcss version and exit'
       })
-      .option('d', {
-        alias: 'debug',
-        boolean: true,
-        describe: 'Emit source maps'
-      })
       .option('c', {
         alias: 'compress',
         boolean: true,
         describe: 'Compress output'
-      })
-      .option('class-map', {
-        describe: 'Remove unused CSS rules and compress class names'
-      })
-      .option('t', {
-        alias: 'transform',
-        describe: 'Apply transform'
       });
 
 function error(msg, showHelp) {
@@ -42,18 +30,7 @@ function error(msg, showHelp) {
     console.warn(msg.stack);
   process.exit(1);
 }
-
-function pipe(a, b) {
-  a.on('error', function(err) {
-    error(err);
-  });
-  a.pipe(b);
-}
-
 var argv = optimist.argv;
-
-if (argv['class-map'])
-  argv.classMap = JSON.parse(fs.readFileSync(argv['class-map'], 'utf8'));
 
 if (argv.help)
   return optimist.showHelp();
@@ -64,4 +41,14 @@ if (argv.version)
 if (argv._.length === 0)
   error('provide bundle entry module as an argument', true);
 
-pipe(xcss(argv._[0], argv), process.stdout);
+var result = {};
+argv._.forEach(function(f) {
+  var map = classMap.find(fs.readFileSync(f, 'utf8')).map;
+  for (var k in map)
+    result[k] = true;
+});
+
+if (argv.compress)
+  result = classMap.compress(result);
+
+console.log(JSON.stringify(result));

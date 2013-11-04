@@ -28,7 +28,7 @@ function error(msg, showHelp) {
   if (showHelp)
     optimist.showHelp();
   console.warn('error: ', msg);
-  if (err.stack)
+  if (msg.stack)
     console.warn(msg.stack);
   process.exit(1);
 }

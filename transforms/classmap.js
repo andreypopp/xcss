@@ -50,7 +50,7 @@ module.exports = function(map) {
       node.rules.splice(idx, 1);
     });
   }
-  return function(mod, ctx) {
-    visit(mod.style.stylesheet);
+  return function(style, ctx) {
+    visit(style.stylesheet);
   }
 }

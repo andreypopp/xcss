@@ -1,10 +1,9 @@
 "use strict";
 
-var through     = require('through');
 var combine     = require('stream-combiner');
 var dgraph      = require('dgraph');
 var imports     = require('dgraph-css-import');
-var pack        = require('css-pack');
+var csspack     = require('css-pack');
 var sort        = require('deps-topo-sort');
 
 /**
@@ -26,6 +25,37 @@ function xcss(entry, opts) {
  */
 function bundle(opts) {
   opts = opts || {};
+
+  var sorter = sort();
+  var combiner = csspack.combine(function(err, style, modules) {
+    if (err)
+      return combiner.emit('error', err);
+
+    var bundle;
+
+    try {
+      var transforms = getTransforms(opts);
+
+      if (transforms.length > 0)
+        style = applyTransforms(style, transforms, opts);
+
+      bundle = csspack.compile(style, {
+        compress: opts.compress,
+        debug: opts.debug,
+        modules: modules
+      });
+    } catch(cerr) {
+      return combiner.emit('error', cerr);
+    }
+
+    combiner.queue(bundle);
+    combiner.queue(null);
+  });
+
+  return combine(sorter, combiner);
+}
+
+function getTransforms(opts) {
   var transforms = [].concat(opts.transform)
     .filter(Boolean)
     .map(function(t) {
@@ -35,51 +65,22 @@ function bundle(opts) {
   if (opts.classMap)
     transforms.push(require('./transforms/classmap')(opts.classMap));
 
-  var packer = pack({sorted: true, debug: opts.debug, compress: opts.compress});
-  if (transforms.length > 0) {
-    // we aggregate modules before piping to packer because transforms may have
-    // effect modules which are previously seen, e.g. we can extend a selector
-    return combine(sort(), transform(transforms), aggregate(), packer);
-  } else {
-    return combine(sort(), packer);
-  }
-}
-
-/**
- * Aggregate a stream of modules
- *
- * @private
- */
-function aggregate() {
-  var modules = [];
-  return through(
-    function(mod) { modules.push(mod); },
-    function() {
-      for (var i = 0, len = modules.length; i < len; i++)
-        this.queue(modules[i]);
-      this.queue(null);
-    });
+  return transforms;
 }
 
 /**
  * Run a pipeline of transform over stream of modules.
  *
  * @private
+ * @param {Style} style
  * @param {Array<Function>} transforms
  */
-function transform(transforms) {
-  var ctx = {};
-  return through(function(mod) {
-    try {
-      for (var i = 0, len = transforms.length; i < len; i++) {
-        var newMod = transforms[i](mod, ctx);
-        if (newMod !== undefined) mod = newMod;
-      }
-    } catch(err) {
-      this.emit('error', 'while transforming ' + mod.id + ': ' + err);
-    }
-    this.queue(mod);
-  });
+function applyTransforms(style, transforms, opts) {
+  var ctx = Object.create(opts);
+  for (var i = 0, len = transforms.length; i < len; i++) {
+    style = transforms[i](style, ctx) || style;
+  }
+  return style;
 }
 
 module.exports = xcss;

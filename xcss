@@ -52,8 +52,16 @@ function pipe(a, b) {
 
 var argv = optimist.argv;
 
-if (argv['class-map'])
-  argv.classMap = JSON.parse(fs.readFileSync(argv['class-map'], 'utf8'));
+if (argv['class-map']) {
+  var filename = argv['class-map'],
+      source = fs.readFileSync(argv['class-map'], 'utf8');
+  if (/\.json$/.exec(filename)) {
+    argv.classMap = JSON.parse(source)
+  } else {
+    var findClassMap  = require('./classmap').find;
+    argv.classMap = findClassMap(source).map;
+  }
+}
 
 if (argv.help)
   return optimist.showHelp();

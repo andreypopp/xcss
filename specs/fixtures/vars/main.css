@@ -1,0 +1,11 @@
+:root {
+  var-color: red;
+}
+
+@import "./dep.css";
+
+body {
+  height: var(height);
+  color: var(color);
+  font-size: var(font-size);
+}

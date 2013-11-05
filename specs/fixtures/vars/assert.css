@@ -1,0 +1,17 @@
+:root {
+  var-color: red;
+}
+
+:root {
+  var-font-size: 11px;
+}
+
+div {
+  color: red;
+}
+
+body {
+  height: 100px;
+  color: red;
+  font-size: 11px;
+}

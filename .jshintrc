@@ -9,6 +9,7 @@
     "require": false,
     "process": false,
     "module": false,
-    "exports": false
+    "exports": false,
+    "console": false
   }
 }

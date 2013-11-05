@@ -1,0 +1,14 @@
+div,
+body {
+  color: red;
+  text-transform: uppercase;
+}
+
+.class,
+body {
+  display: block;
+}
+
+body {
+  left: 0;
+}

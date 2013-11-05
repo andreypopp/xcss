@@ -1,0 +1,7 @@
+:root {
+  var-font-size: 11px;
+}
+
+div {
+  color: var(color);
+}

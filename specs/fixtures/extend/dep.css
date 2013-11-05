@@ -1,0 +1,7 @@
+.class {
+  display: block;
+}
+
+div {
+  extend: %mixin;
+}

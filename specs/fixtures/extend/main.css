@@ -1,0 +1,11 @@
+%mixin {
+  color: red;
+  text-transform: uppercase;
+}
+
+@import "./dep.css";
+
+body {
+  extend: %mixin, .class;
+  left: 0;
+}

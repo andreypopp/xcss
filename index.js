@@ -16,7 +16,7 @@ var resolve     = require('resolve');
 function xcss(entry, opts) {
   opts = opts || {};
   opts.basedir = opts.basedir || process.cwd();
-  opts.transforms = getTransforms(opts);
+  opts.transform = getTransforms(opts);
   var dgraphOptions = {globalTransform: imports};
   return combine(dgraph(entry, dgraphOptions), bundle(opts));
 }
@@ -37,8 +37,8 @@ function bundle(opts) {
     var bundle;
 
     try {
-      if (opts.transforms && opts.transforms.length > 0)
-        style = applyTransforms(style, opts.transforms, opts);
+      if (opts.transform && opts.transform.length > 0)
+        style = applyTransforms(style, opts.transform, opts) || style;
 
       bundle = csspack.compile(style, {
         compress: opts.compress,

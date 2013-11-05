@@ -27,7 +27,6 @@
     "css-pack": "~0.8.0",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
-    "rework-visit": "~1.0.0",
     "detective": "~2.2.0"
   },
   "devDependencies": {

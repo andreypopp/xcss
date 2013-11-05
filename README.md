@@ -29,6 +29,43 @@ xcss can be used as a command-line utility:
       --class-map      Use class map to remove unused stylesheet rules
       -t, --transform  Apply transform
 
+## API
+
+Usage from Node.js is pretty simple:
+
+    var xcss = require('xcss');
+
+    var bundle = xcss({
+      transform: ['xcss/transforms/vars'],
+      classMap: {
+        '.theOnlyUsedClassName': true
+      },
+      debug: true // generate source map
+    });
+
+    bundle.pipe(process.stdout);
+
+## Dependency resolution
+
+xcss uses Node module resolution strategy to resolve dependencies of each
+concrete CSS module. To import other modules a inside package you should use
+relative identifier like `./dep` or `./lib/dep`. To import stylesheets from
+other packages in `node_modules/` directory you should use just package
+identifier `pkg` and if you want a submodule in a package — `pkg/submodule`.
+
+As a package author you can customize an entry point to you package by providing
+a `"style"` property in `package.json`. If you `"style"` property is set to
+`"./lib/styles.css"` like so:
+
+    {
+      ...
+      "name": "pkg",
+      "style": "./lib/styles.css",
+      ...
+    }
+
+then a user of your package will get `pkg/lib/style` when importing `pkg`.
+
 ## Transforms
 
 xcss comes bundled with three transform — `extend`, `vars` and `autoprefixer`
@@ -102,19 +139,3 @@ In CommonJS environment you can obtain `cx()` function in module `xcss/cx`.
 Class map passed as `--class-map` option can have string as values, which will
 be used to replace class names. That means you can generate class map from you
 codebase which will shorten class names.
-
-## API
-
-Usage from Node.js is pretty simple:
-
-    var xcss = require('xcss');
-
-    var bundle = xcss({
-      transform: ['xcss/transforms/vars'],
-      classMap: {
-        '.theOnlyUsedClassName': true
-      },
-      debug: true // generate source map
-    });
-
-    bundle.pipe(process.stdout);

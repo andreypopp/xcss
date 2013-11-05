@@ -21,8 +21,8 @@
   "author": "Andrey Popp <8mayday@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "dgraph": "~0.11.1",
-    "dgraph-css-import": "~0.5.0",
+    "dgraph": "~0.12.0",
+    "dgraph-css-import": "~0.6.0",
     "stream-combiner": "0.0.2",
     "css-pack": "~0.8.0",
     "optimist": "~0.6.0",

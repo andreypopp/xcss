@@ -1,24 +1,28 @@
 var assert = require('assert');
 var utils = require('./utils');
 
+function generateTestCase(cb, fixture, opts) {
+  utils.bundle(fixture + '/main.css', opts).then(function(bundle) {
+    utils.assertBundle(bundle, fixture + '/assert.css');
+  }).then(cb, cb);
+}
+
 describe('xcss', function() {
 
   it('bundles deps', function(done) {
-    utils.bundle('deps/main.css').then(function(bundle) {
-      utils.assertBundle(bundle, 'deps/assert.css');
-    }).then(done, done);
+    generateTestCase(done, 'deps');
   });
 
   it('removes unused rule when classMap passed as an option', function(done) {
-    utils.bundle('rm-unused/main.css', {classMap: {'.used': true}}).then(function(bundle) {
-      utils.assertBundle(bundle, 'rm-unused/assert.css');
-    }).then(done, done);
+    generateTestCase(done, 'rm-unused', {classMap: {'.used': true}});
   });
 
   it('compresses rules when classMap passed as an option with string values', function(done) {
-    utils.bundle('compress/main.css', {classMap: {'.used': '.A', '.unused': '.B'}}).then(function(bundle) {
-      utils.assertBundle(bundle, 'compress/assert.css');
-    }).then(done, done);
+    generateTestCase(done, 'compress', {classMap: {'.used': '.A', '.unused': '.B'}});
+  });
+
+  it('respect "style" property of package.json', function(done) {
+    generateTestCase(done, 'load-pkg-style');
   });
 
   it('emits source maps if passed debug option', function(done) {

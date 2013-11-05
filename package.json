@@ -27,7 +27,8 @@
     "css-pack": "~0.8.0",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
-    "detective": "~2.2.0"
+    "detective": "~2.2.0",
+    "resolve": "~0.5.1"
   },
   "devDependencies": {
     "semver": "~2.2.1",

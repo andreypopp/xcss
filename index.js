@@ -5,6 +5,7 @@ var dgraph      = require('dgraph');
 var imports     = require('dgraph-css-import');
 var csspack     = require('css-pack');
 var sort        = require('deps-topo-sort');
+var resolve     = require('resolve');
 
 /**
  * Resolve dependencies of a given CSS file and run a set of transforms over.
@@ -14,6 +15,8 @@ var sort        = require('deps-topo-sort');
  */
 function xcss(entry, opts) {
   opts = opts || {};
+  opts.basedir = opts.basedir || process.cwd();
+  opts.transforms = getTransforms(opts);
   var dgraphOptions = {globalTransform: imports};
   return combine(dgraph(entry, dgraphOptions), bundle(opts));
 }
@@ -34,10 +37,9 @@ function bundle(opts) {
     var bundle;
 
     try {
-      var transforms = getTransforms(opts);
 
-      if (transforms.length > 0)
-        style = applyTransforms(style, transforms, opts);
+      if (opts.transforms.length > 0)
+        style = applyTransforms(style, opts.transforms, opts);
 
       bundle = csspack.compile(style, {
         compress: opts.compress,
@@ -58,8 +60,10 @@ function bundle(opts) {
 function getTransforms(opts) {
   var transforms = [].concat(opts.transform)
     .filter(Boolean)
-    .map(function(t) {
-      return (typeof t === 'function') ? t : require(t);
+    .map(function(transform) {
+      return (typeof transform === 'function') ?
+        transform :
+        require(resolve.sync(transform, {basedir: opts.basedir}));
     });
 
   if (opts.classMap)

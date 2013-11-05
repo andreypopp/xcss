@@ -6,6 +6,7 @@ CSS bundler with the following features:
   * Stylesheet AST transformations in spirit of rework.
   * Source maps support.
   * Elimination of unused class rules.
+  * Class name compression.
 
 It is like [browserify][1] but for CSS.
 
@@ -15,7 +16,7 @@ It is like [browserify][1] but for CSS.
 
     % npm install xcss
 
-## Usage
+## Basic usage
 
 xcss can be used as a command-line utility:
 
@@ -27,6 +28,33 @@ xcss can be used as a command-line utility:
       -d, --debug      Emit source maps
       --class-map      Use class map to remove unused stylesheet rules
       -t, --transform  Apply transform
+
+## Transforms
+
+xcss comes bundled with three transform — `extend`, `vars` and `autoprefixer`
+which are all based on corresponding transforms for rework — `rework-inherit`,
+`rework-vars` and `autoprefixer`.
+
+You can use transforms by using a `--transform` option:
+
+    xcss -t xcss/transforms/vars -t xcss/transforms/extend ./main.css
+
+As you can see, xcss supports rework transforms but have slightly different
+configuration for them which allows using them from command line. Each transform
+resides in its own module and should require no configuration (that means having
+a set of sensible defaults).
+
+Usually that means that using rework transforms are super easy, for example to
+create a xcss transform from `rework-vars` you just create a module with the
+following contents:
+
+    var vars = require('rework-vars);
+
+    module.exports = function(style, ctx) {
+      return vars(ctx.vars)(style.stylesheet);
+    }
+
+## Elimination of unused class rules
 
 To remove unused stylesheet rules you should pass a class map file via
 `--class-map` option. Class map file is a JSON file formatted like
@@ -68,3 +96,25 @@ That way at runtime `classString` will be evaluated so that it only contains
 class names those values evaluated to `true`.
 
 In CommonJS environment you can obtain `cx()` function in module `xcss/cx`.
+
+## Class name compression
+
+Class map passed as `--class-map` option can have string as values, which will
+be used to replace class names. That means you can generate class map from you
+codebase which will shorten class names.
+
+## API
+
+Usage from Node.js is pretty simple:
+
+    var xcss = require('xcss');
+
+    var bundle = xcss({
+      transform: ['xcss/transforms/vars'],
+      classMap: {
+        '.theOnlyUsedClassName': true
+      },
+      debug: true // generate source map
+    });
+
+    bundle.pipe(process.stdout);

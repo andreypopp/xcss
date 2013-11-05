@@ -37,8 +37,7 @@ function bundle(opts) {
     var bundle;
 
     try {
-
-      if (opts.transforms.length > 0)
+      if (opts.transforms && opts.transforms.length > 0)
         style = applyTransforms(style, opts.transforms, opts);
 
       bundle = csspack.compile(style, {

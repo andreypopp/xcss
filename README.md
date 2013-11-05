@@ -58,7 +58,7 @@ following contents:
 
 To remove unused stylesheet rules you should pass a class map file via
 `--class-map` option. Class map file is a JSON file formatted like
-`{"class-name": true}`.
+`{".class-name": true}`.
 
 You can use `xcss-classmap` command line utility to build one from JavaScript
 code:
@@ -72,13 +72,13 @@ code:
 It extracts class names marked with `cx()` function calls, for example the
 following code:
 
-    var classString = cx('some-class', 'another-class');
+    var classString = cx('.some-class', '.another-class');
 
 would result in a class map:
 
     {
-      "some-class": true,
-      "another-class": true
+      ".some-class": true,
+      ".another-class": true
     }
 
 At runtime `classString` will be equal to `.some-class .another-class` so you
@@ -88,8 +88,8 @@ Another way to call `cx()` function it to pass an object literal with class
 names as keys and boolean expressions as values:
 
     var classString = cx({
-      'some-class': true,
-      'another-class': someCondition()
+      '.some-class': true,
+      '.another-class': someCondition()
     });
 
 That way at runtime `classString` will be evaluated so that it only contains

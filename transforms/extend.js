@@ -8,6 +8,6 @@ try {
 }
 
 module.exports = function(style, ctx) {
-  extend()(style.stylesheet);
+  extend()(style);
   return style;
 }

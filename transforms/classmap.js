@@ -51,6 +51,6 @@ module.exports = function(map) {
     });
   }
   return function(style, ctx) {
-    visit(style.stylesheet);
+    visit(style);
   }
 }

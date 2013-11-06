@@ -8,5 +8,5 @@ try {
 }
 
 module.exports = function(style, ctx) {
-  return shade()(style.stylesheet);
+  return shade()(style);
 }

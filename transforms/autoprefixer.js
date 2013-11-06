@@ -8,5 +8,5 @@ try {
 }
 
 module.exports = function(style, ctx) {
-  return autoprefixer(ctx.autoprefixer).rework(style.stylesheet);
+  return autoprefixer(ctx.autoprefixer).rework(style);
 }

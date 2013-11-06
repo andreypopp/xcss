@@ -81,7 +81,7 @@ function getTransforms(opts) {
 function applyTransforms(style, transforms, opts) {
   var ctx = Object.create(opts);
   for (var i = 0, len = transforms.length; i < len; i++) {
-    style = transforms[i](style, ctx) || style;
+    style.stylesheet = transforms[i](style.stylesheet, ctx) || style.stylesheet;
   }
   return style;
 }

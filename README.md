@@ -26,6 +26,7 @@ xcss can be used as a command-line utility:
       -h, --help       Show this message and exit
       -v, --version    Print xcss version and exit
       -d, --debug      Emit source maps
+      -c, --compress   Compress output
       --class-map      Use class map to remove unused stylesheet rules
       -t, --transform  Apply transform
 

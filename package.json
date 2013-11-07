@@ -22,7 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "dgraph": "~0.12.0",
-    "dgraph-css-import": "~0.6.0",
+    "dgraph-css-import": "~0.6.1",
     "stream-combiner": "0.0.2",
     "css-pack": "~0.8.0",
     "optimist": "~0.6.0",

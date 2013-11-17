@@ -29,7 +29,8 @@
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
     "detective": "~2.2.0",
-    "resolve": "~0.5.1"
+    "resolve": "~0.5.1",
+    "kew": "~0.3.0"
   },
   "devDependencies": {
     "semver": "~2.2.1",

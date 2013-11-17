@@ -1,6 +1,7 @@
 "use strict";
 
 var combine     = require('stream-combiner');
+var kew         = require('kew');
 var dgraph      = require('dgraph');
 var imports     = require('dgraph-css-import');
 var csspack     = require('css-pack');
@@ -34,23 +35,21 @@ function bundle(opts) {
     if (err)
       return combiner.emit('error', err);
 
-    var bundle;
 
-    try {
-      if (opts.transform && opts.transform.length > 0)
-        style = applyTransforms(style, opts.transform, opts);
+    style = (opts.transform && opts.transform.length > 0) ?
+      applyTransforms(style, opts.transform, opts) :
+      kew.resolve(style);
 
-      bundle = csspack.compile(style, {
+    style.then(function(style) {
+      var bundle = csspack.compile(style, {
         compress: opts.compress,
         debug: opts.debug,
         modules: modules
       });
-    } catch(cerr) {
-      return combiner.emit('error', cerr);
-    }
 
-    combiner.queue(bundle);
-    combiner.queue(null);
+      combiner.queue(bundle);
+      combiner.queue(null);
+    }, function(err) { combiner.emit('error', err) });
   });
 
   return combine(sorter, combiner);
@@ -79,11 +78,26 @@ function getTransforms(opts) {
  * @param {Array<Function>} transforms
  */
 function applyTransforms(style, transforms, opts) {
-  var ctx = Object.create(opts);
-  for (var i = 0, len = transforms.length; i < len; i++) {
-    style.stylesheet = transforms[i](style.stylesheet, ctx) || style.stylesheet;
-  }
-  return style;
+  opts = Object.create(opts);
+  var promise = kew.resolve(style.stylesheet);
+
+  transforms.forEach(function(transform) {
+    promise = promise.then(function(stylesheet) {
+      return applyTransform(stylesheet, transform, opts);
+    });
+  });
+
+  return promise.then(function(stylesheet) {
+    style.stylesheet = stylesheet;
+    return style;
+  });
+}
+
+function applyTransform(stylesheet, transform, opts) {
+  return kew.resolve(transform(stylesheet, opts))
+    .then(function(newStylesheet) {
+      return newStylesheet || stylesheet;
+    });
 }
 
 module.exports = xcss;

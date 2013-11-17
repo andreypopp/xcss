@@ -14,11 +14,11 @@ describe('xcss', function() {
   });
 
   it('removes unused rule when classMap passed as an option', function(done) {
-    generateTestCase(done, 'rm-unused', {classMap: {'.used': true}});
+    generateTestCase(done, 'rm-unused', {classMap: {'used': true}});
   });
 
   it('compresses rules when classMap passed as an option with string values', function(done) {
-    generateTestCase(done, 'compress', {classMap: {'.used': '.A', '.unused': '.B'}});
+    generateTestCase(done, 'compress', {classMap: {'used': 'A', 'unused': 'B'}});
   });
 
   it('respect "style" property of package.json', function(done) {

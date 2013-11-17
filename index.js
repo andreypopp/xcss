@@ -66,7 +66,7 @@ function getTransforms(opts) {
     });
 
   if (opts.classMap)
-    transforms.push(require('./transforms/classmap')(opts.classMap));
+    transforms.push(require('rework-classmap')(opts.classMap));
 
   return transforms;
 }

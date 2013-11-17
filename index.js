@@ -38,7 +38,7 @@ function bundle(opts) {
 
     try {
       if (opts.transform && opts.transform.length > 0)
-        style = applyTransforms(style, opts.transform, opts) || style;
+        style = applyTransforms(style, opts.transform, opts);
 
       bundle = csspack.compile(style, {
         compress: opts.compress,

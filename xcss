@@ -4,6 +4,7 @@
 
 var fs        = require('fs');
 var path      = require('path');
+var aggregate = require('stream-aggregate');
 var Bundler   = require('./index').Bundler;
 var optimist  = require('optimist')
       .usage('Usage: xcss [options] entry')
@@ -16,6 +17,10 @@ var optimist  = require('optimist')
         alias: 'version',
         boolean: true,
         describe: 'Print xcss version and exit'
+      })
+      .option('verbose', {
+        boolean: true,
+        describe: 'Operate in verbose mode'
       })
       .option('d', {
         alias: 'debug',
@@ -42,6 +47,10 @@ var optimist  = require('optimist')
         alias: 'transform',
         describe: 'Apply transform'
       });
+
+function log() {
+  if (argv.verbose) console.log.apply(console, arguments);
+}
 
 function error(msg, showHelp) {
   if (showHelp)
@@ -86,11 +95,16 @@ var output = argv.output ? fs.createWriteStream(argv.output) : process.stdout;
 var bundler = new Bundler(argv._[0], argv);
 
 function bundle(filename) {
+  var start = new Date();
   if (filename) {
     filename = path.relative(cwd, filename);
-    console.log('changed detected in ' + filename + ', rebuilding...');
+    log('change detected in ' + filename + ', rebuilding...');
   }
-  pipe(bundler.toStream(), output);
+  aggregate(bundler.toStream(), function(err, bundle) {
+    log('bundle built in', new Date() - start, 'ms');
+    output.write(bundle);
+    output.end();
+  });
 }
 
 bundle();

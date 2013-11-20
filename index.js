@@ -1,12 +1,15 @@
 "use strict";
 
-var combine     = require('stream-combiner');
-var kew         = require('kew');
-var dgraph      = require('dgraph');
-var imports     = require('dgraph-css-import');
-var csspack     = require('css-pack');
-var sort        = require('deps-topo-sort');
-var resolve     = require('resolve');
+var EventEmitter  = require('events').EventEmitter;
+var combine       = require('stream-combiner');
+var kew           = require('kew');
+var utils         = require('lodash');
+var Graph         = require('dgraph').Graph;
+var live          = require('dgraph-live');
+var imports       = require('dgraph-css-import');
+var csspack       = require('css-pack');
+var sort          = require('deps-topo-sort');
+var resolve       = require('resolve');
 
 /**
  * Resolve dependencies of a given CSS file and run a set of transforms over.
@@ -15,12 +18,30 @@ var resolve     = require('resolve');
  * @param {Object} opts
  */
 function xcss(entry, opts) {
+  return new Bundler(entry, opts).toStream();
+}
+
+function Bundler(entry, opts) {
   opts = opts || {};
   opts.basedir = opts.basedir || process.cwd();
   opts.transform = getTransforms(opts);
-  var dgraphOptions = {globalTransform: imports};
-  return combine(dgraph(entry, dgraphOptions), bundle(opts));
+
+  this.entry = entry;
+  this.opts = opts;
+
+  this.graph = new Graph(entry, {globalTransform: imports});
+
+  if (opts.watch) {
+    this.graph = live(this.graph);
+    this.graph.on('update', this.emit.bind(this, 'update'));
+  }
 }
+
+Bundler.prototype = utils.assign(Bundler.prototype, EventEmitter.prototype, {
+  toStream: function() {
+    return combine(this.graph.toStream(), bundle(this.opts));
+  }
+});
 
 /**
  * Bundle stream of modules.
@@ -102,3 +123,4 @@ function applyTransform(stylesheet, transform, opts) {
 
 module.exports = xcss;
 module.exports.bundle = bundle;
+module.exports.Bundler = Bundler;

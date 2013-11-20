@@ -3,7 +3,8 @@
 // vim: set ft=javascript:
 
 var fs        = require('fs');
-var xcss      = require('./index');
+var path      = require('path');
+var Bundler   = require('./index').Bundler;
 var optimist  = require('optimist')
       .usage('Usage: xcss [options] entry')
       .option('h', {
@@ -26,6 +27,14 @@ var optimist  = require('optimist')
         boolean: true,
         describe: 'Compress output'
       })
+      .option('w', {
+        alias: 'watch',
+        describe: 'Watch for changes and rebuild (-o/--output should be provided)'
+      })
+      .option('o', {
+        alias: 'output',
+        describe: 'Output for bundle'
+      })
       .option('class-map', {
         describe: 'Use class map to remove unused stylesheet rules'
       })
@@ -37,7 +46,7 @@ var optimist  = require('optimist')
 function error(msg, showHelp) {
   if (showHelp)
     optimist.showHelp();
-  console.warn('error: ', msg);
+  console.warn('error:', msg);
   if (msg.stack)
     console.warn(msg.stack);
   process.exit(1);
@@ -50,6 +59,7 @@ function pipe(a, b) {
   a.pipe(b);
 }
 
+var cwd = process.cwd();
 var argv = optimist.argv;
 
 if (argv['class-map']) {
@@ -72,4 +82,22 @@ if (argv.version)
 if (argv._.length === 0)
   error('provide bundle entry module as an argument', true);
 
-pipe(xcss(argv._[0], argv), process.stdout);
+var output = argv.output ? fs.createWriteStream(argv.output) : process.stdout;
+var bundler = new Bundler(argv._[0], argv);
+
+function bundle(filename) {
+  if (filename) {
+    filename = path.relative(cwd, filename);
+    console.log('changed detected in ' + filename + ', rebuilding...');
+  }
+  pipe(bundler.toStream(), output);
+}
+
+bundle();
+
+if (argv.watch) {
+  if (!argv.output)
+    error('provide output with -o/--output command line option');
+  bundler.on('update', bundle);
+}
+

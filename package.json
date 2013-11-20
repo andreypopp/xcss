@@ -1,6 +1,6 @@
 {
   "name": "xcss",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "CSS bundler for modular UI components",
   "main": "index.js",
   "bin": {

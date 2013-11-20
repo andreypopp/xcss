@@ -61,13 +61,6 @@ function error(msg, showHelp) {
   process.exit(1);
 }
 
-function pipe(a, b) {
-  a.on('error', function(err) {
-    error(err);
-  });
-  a.pipe(b);
-}
-
 var cwd = process.cwd();
 var argv = optimist.argv;
 
@@ -101,6 +94,8 @@ function bundle(filename) {
     log('change detected in ' + filename + ', rebuilding...');
   }
   aggregate(bundler.toStream(), function(err, bundle) {
+    if (err)
+      error(err.toString());
     log('bundle built in', new Date() - start, 'ms');
     output.write(bundle);
     output.end();

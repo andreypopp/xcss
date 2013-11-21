@@ -32,7 +32,8 @@
     "resolve": "~0.5.1",
     "kew": "~0.3.0",
     "dgraph-live": "~0.5.0",
-    "lodash": "~2.3.0"
+    "lodash": "~2.3.0",
+    "stream-aggregate": "~0.1.1"
   },
   "devDependencies": {
     "semver": "~2.2.1",

@@ -25,7 +25,7 @@
     "dgraph-css-import": "~0.6.1",
     "stream-combiner": "0.0.2",
     "rework-classmap": "0.1.0",
-    "css-pack": "~0.8.0",
+    "css-pack": "~0.8.1",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
     "detective": "~2.2.0",

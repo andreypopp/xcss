@@ -25,7 +25,7 @@
     "dgraph-css-import": "~0.6.1",
     "stream-combiner": "0.0.2",
     "rework-classmap": "0.1.0",
-    "css-pack": "~0.8.1",
+    "css-pack": "~0.8.2",
     "optimist": "~0.6.0",
     "deps-topo-sort": "~0.2.0",
     "detective": "~2.2.0",
@@ -39,6 +39,9 @@
     "semver": "~2.2.1",
     "jshint": "~2.3.0",
     "mocha": "~1.14.0",
-    "stream-aggregate-promise": "~0.1.2"
+    "stream-aggregate-promise": "~0.1.2",
+    "rework": "~0.19.0",
+    "rework-inherit": "~0.2.1",
+    "autoprefixer": "~0.8.x"
   }
 }

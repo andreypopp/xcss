@@ -1,6 +1,6 @@
 {
   "name": "xcss",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "CSS bundler for modular UI components",
   "main": "index.js",
   "bin": {
@@ -42,6 +42,7 @@
     "stream-aggregate-promise": "~0.1.2",
     "rework": "~0.19.0",
     "rework-inherit": "~0.2.1",
-    "autoprefixer": "~0.8.x"
+    "autoprefixer": "~0.8.x",
+    "rework-vars": "~2.0.2"
   }
 }

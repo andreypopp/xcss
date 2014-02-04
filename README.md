@@ -30,6 +30,19 @@ xcss can be used as a command-line utility:
       --class-map      Use class map to remove unused stylesheet rules
       -t, --transform  Apply transform
 
+## Using with browserify
+
+xcss implements browserify Workflows API (currently in development) and can be
+used to require stylesheets right from the code:
+
+    % browserify -w xcss --xcss-out ./bundle.css --out ./bundle.js ./index.js
+
+Where your `index.js` or any of its deps may look like:
+
+    var styles = require('./index.css');
+
+At runtie `styles` variable contain class names from `./index.css`.
+
 ## API
 
 Usage from Node.js is pretty simple:

@@ -18,6 +18,10 @@ var resolve       = require('resolve');
  * @param {Object} opts
  */
 function xcss(entry, opts) {
+  if (typeof entry.transform === 'function') {
+    var workflow = require('./workflow');
+    return workflow.apply(workflow, arguments);
+  }
   return new Bundler(entry, opts).toStream();
 }
 

@@ -423,6 +423,14 @@ module.exports = function(css, options){
   }
 
   /**
+   * Parse require
+   */
+
+  function atrequire() {
+    return _atrule('require');
+  }
+
+  /**
    * Parse charset
    */
 
@@ -462,6 +470,7 @@ module.exports = function(css, options){
       || atmedia()
       || atsupports()
       || atimport()
+      || atrequire()
       || atcharset()
       || atnamespace()
       || atdocument()

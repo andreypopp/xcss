@@ -41,8 +41,8 @@ Compiler.prototype.declareRequire = function(id, path) {
 // CSS stylesheet -> xcss.Stylesheet
 Compiler.prototype.stylesheet = function(node){
   var rules = node.stylesheet.rules.filter(function(rule) {
-    if (rule.type === 'import') {
-      var imp = parseImportAs(rule.import);
+    if (rule.type === 'require') {
+      var imp = parseRequire(rule.require);
       if (imp) {
         this.declareRequire(imp.id, imp.path);
         return false;
@@ -92,7 +92,7 @@ Compiler.prototype.import = function(node) {
     [reqCall]);
 };
 
-function parseImportAs(value) {
+function parseRequire(value) {
   var m = /^"([^"]+)" +as +([a-zA-Z_][a-zA-Z0-9_]*)$/.exec(value.trim());
   if (m) return {path: m[1], id: m[2]};
 }

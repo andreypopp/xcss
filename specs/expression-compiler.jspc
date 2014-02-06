@@ -29,5 +29,8 @@ describe "expression compiler" {
 
   it "compiles a CSS with interpolation" {
     t("12px {color}") should == '"12px " + color'
+    t("{color} 12px") should == 'color + " 12px"'
+    t("12px {color} 12px") should == '"12px " + color + " 12px"'
+    t("{color} 12px {color}") should == 'color + " 12px " + color'
   }
 }

@@ -1,0 +1,5 @@
+@import "./simple.xcss";
+
+.i-just-imported-another-module {
+  message: hello;
+}

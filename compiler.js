@@ -16,7 +16,9 @@ function Compiler(options) {
   BaseCompiler.call(this, options);
   this.visit = this.visit.bind(this);
 
-  this.requires = [buildRequire('xcss', 'xcss')];
+  this.options.xcssModulePath = this.options.xcssModulePath || 'xcss';
+
+  this.requires = [buildRequire('xcss', this.options.xcssModulePath)];
   this.scope = {};
 }
 util.inherits(Compiler, BaseCompiler);
@@ -81,7 +83,7 @@ Compiler.prototype.declaration = function(node) {
 
 // @import -> xcss.Import
 Compiler.prototype.import = function(node) {
-  var value = node.import.replace('"', '');
+  var value = node.import.replace(/"/g, '');
   var reqCall = b.callExpression(
     b.identifier('require'),
     [b.literal(value)]);
@@ -101,7 +103,7 @@ function buildRequire(id, path) {
     b.callExpression(b.identifier('require'), [b.literal(path)]));
 }
 
-module.exports = function(src) {
+module.exports = function(src, options) {
   var stylesheet = parse(src);
-  return new Compiler().compile(stylesheet);
+  return new Compiler(options).compile(stylesheet);
 }

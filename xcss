@@ -1,6 +1,17 @@
 #!/usr/bin/env node
+var minimist  = require('minimist');
+var xcss      = require('./index');
 var fs        = require('fs');
-var compile   = require('./compiler');
 
-var src = fs.readFileSync(process.argv[2], 'utf8');
-console.log(compile(src));
+var argv = minimist(process.argv);
+
+if (!argv._[2] || !fs.existsSync(argv._[2])) {
+  console.warn('error: provide a filename as an argument');
+  process.exit(1);
+}
+
+if (argv['xcss-module-path']) {
+  process.env.XCSS_MODULE_PATH = argv['xcss-module-path'];
+}
+
+console.log(require(argv._[2]).toString());

@@ -25,7 +25,9 @@
   "dependencies": {
     "css-parse": "~1.7.0",
     "css-stringify": "~1.4.1",
-    "recast": "~0.5.7"
+    "recast": "~0.5.7",
+    "minimist": "0.0.5",
+    "flatmap": "0.0.3"
   },
   "devDependencies": {
     "jspecs": "~0.2.0"

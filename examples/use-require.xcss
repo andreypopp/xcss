@@ -1,0 +1,5 @@
+@import "path" as path;
+
+.Component {
+  source: {path.dirname(__filename)};
+}

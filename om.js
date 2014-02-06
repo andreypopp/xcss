@@ -4,10 +4,17 @@
  */
 
 var stringify = require('css-stringify');
+var flatMap   = require('flatmap');
 
 function Stylesheet() {
   if (!(this instanceof Stylesheet)) return construct(Stylesheet, arguments);
-  this.rules = toArray(arguments);
+  this.type = 'stylesheet';
+  this.rules = flatMap(toArray(arguments), function(rule) {
+    if (rule.type === 'import') {
+      return rule.stylesheet.rules;
+    }
+    return rule;
+  });
 }
 
 Stylesheet.prototype.toString = function() {

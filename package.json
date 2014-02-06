@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Programmable stylesheets",
   "main": "index.js",
-  "bin": "./xcss",
+  "bin": "./bin/xcss",
   "scripts": {
     "test": "jspecs specs/*.jspc"
   },

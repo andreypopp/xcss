@@ -1,0 +1,9 @@
+usage: xcss [-ch] <filename>
+
+Compile xCSS to CSS and print the result.
+
+options:
+
+    -c, --compile  Compile xCSS to JavaScript and print the result
+
+       -h, --help  Show this message and exit

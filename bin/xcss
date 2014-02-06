@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+var path      = require('path');
+var fs        = require('fs');
+var minimist  = require('minimist');
+var xcss      = require('../index');
+var compile   = require('../compiler');
+
+var argv = minimist(process.argv, {boolean: ['c', 'compile', 'h', 'help']});
+var file = path.resolve(argv._[2]);
+
+if (argv.help|| argv.h) {
+  console.log(fs.readFileSync(path.join(__dirname, 'usage.txt'), 'utf8'));
+  process.exit(0);
+}
+
+if (!file || !fs.existsSync(file)) {
+  console.warn('error: provide a filename as an argument');
+  process.exit(1);
+}
+
+if (argv.compile || argv.c) {
+  console.log(compile(fs.readFileSync(file, 'utf8')));
+} else {
+  console.log(require(file).toString());
+}

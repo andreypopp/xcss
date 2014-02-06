@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Programmable stylesheets",
   "main": "index.js",
-  "browser": "browser.js",
   "scripts": {
     "test": "jspecs specs/*.jspc"
   },

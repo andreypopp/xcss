@@ -9,16 +9,11 @@ var flatMap   = require('flatmap');
 function Stylesheet() {
   if (!(this instanceof Stylesheet)) return construct(Stylesheet, arguments);
   this.type = 'stylesheet';
-  this.rules = flatMap(toArray(arguments), function(rule) {
-    if (rule.type === 'import') {
-      return rule.stylesheet.rules;
-    }
-    return rule;
-  });
+  this.rules = toArray(arguments);
 }
 
 Stylesheet.prototype.toString = function() {
-  return stringify({type: 'stylesheet', stylesheet: this});
+  return stringify({type: 'stylesheet', stylesheet: {rules: flattenStylesheet(this)}});
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {
@@ -50,6 +45,21 @@ function Import(stylesheet) {
   if (!(this instanceof Import)) return construct(Import, arguments);
   this.type = 'import';
   this.stylesheet = stylesheet;
+}
+
+/**
+ * Flatten stylesheet hierarchy
+ */
+function flattenStylesheet(stylesheet, seen) {
+  seen = seen || [];
+  return flatMap(stylesheet.rules, function(rule) {
+    if (rule.type === 'import') {
+      if (seen.indexOf(rule.stylesheet) > -1) return [];
+      seen.push(rule.stylesheet);
+      return flattenStylesheet(rule.stylesheet, seen);
+    }
+    return rule;
+  });
 }
 
 function construct(cls, args) {

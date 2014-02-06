@@ -6,6 +6,7 @@
 var BaseCompiler  = require('css-stringify/lib/compiler');
 var recast        = require('recast');
 var util          = require('util');
+var toCamelCase   = require('to-camel-case');
 var parse         = require('./parser');
 var compileExpr   = require('./expression-compiler');
 
@@ -67,16 +68,23 @@ Compiler.prototype.rule = function(node){
 
 // CSS declaration to {prop: val, ...} or call
 Compiler.prototype.declaration = function(node) {
+  var name = toCamelCase(node.property);
   var value = compileExpr(node.value);
-  if (this.scope[node.property]) {
+
+  var identifier = name;
+  if (name.indexOf('.') > -1) {
+    identifier = name.split('.')[0];
+  }
+
+  if (this.scope[identifier]) {
     return b.callExpression(
-      b.identifier(node.property),
+      b.identifier(name),
       [value]);
   } else {
     return b.objectExpression([
       b.property(
         'init',
-        b.literal(node.property),
+        b.literal(name),
         value)]);
   }
 };

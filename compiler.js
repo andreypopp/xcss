@@ -59,8 +59,19 @@ Compiler.prototype.stylesheet = function(node){
 
 // CSS rule -> xcss.Rule
 Compiler.prototype.rule = function(node){
-  var selectors = node.selectors.map(b.literal);
   var declarations = node.declarations.map(this.visit);
+
+  // probably a call in rule position
+  if (node.selectors.length === 1 && node.selectors[0].indexOf(' ') === -1) {
+    var name = toCamelCase(node.selectors[0]);
+    if (this.scope[getIdentifier(name)]) {
+      return b.callExpression(
+        b.identifier(name),
+        declarations);
+    }
+  }
+
+  var selectors = node.selectors.map(b.literal);
   return b.callExpression(
     b.identifier('xcss.Rule'),
     selectors.concat(declarations));
@@ -71,12 +82,7 @@ Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpr(node.value);
 
-  var identifier = name;
-  if (name.indexOf('.') > -1) {
-    identifier = name.split('.')[0];
-  }
-
-  if (this.scope[identifier]) {
+  if (this.scope[getIdentifier(name)]) {
     return b.callExpression(
       b.identifier(name),
       [value]);
@@ -103,6 +109,14 @@ Compiler.prototype.import = function(node) {
 function parseRequire(value) {
   var m = /^"([^"]+)" +as +([a-zA-Z_][a-zA-Z0-9_]*)$/.exec(value.trim());
   if (m) return {path: m[1], id: m[2]};
+}
+
+function getIdentifier(name) {
+  var identifier = name;
+  if (name.indexOf('.') > -1) {
+    identifier = name.split('.')[0];
+  }
+  return identifier;
 }
 
 function buildRequire(id, path) {

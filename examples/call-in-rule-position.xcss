@@ -1,0 +1,5 @@
+@require "./coloredposition.xcss" as mod;
+
+mod.ColoredPosition {
+  width: 12px;
+}

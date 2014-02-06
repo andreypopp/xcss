@@ -12,8 +12,12 @@ function Stylesheet() {
   this.rules = toArray(arguments);
 }
 
+Stylesheet.prototype.flatten = function() {
+  return construct(Stylesheet, flattenStylesheet(this));
+}
+
 Stylesheet.prototype.toString = function() {
-  return stringify({type: 'stylesheet', stylesheet: {rules: flattenStylesheet(this)}});
+  return stringify({type: 'stylesheet', stylesheet: this.flatten()});
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {

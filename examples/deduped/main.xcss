@@ -1,0 +1,7 @@
+@import "./a.xcss";
+@import "./b.xcss";
+@import "./b.xcss";
+
+body {
+  iam: main;
+}

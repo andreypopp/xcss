@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * XCSS Node entry
+ */
 
 var fs        = require('fs');
 var compile   = require('./compiler');

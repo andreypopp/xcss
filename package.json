@@ -29,6 +29,7 @@
     "flatmap": "0.0.3"
   },
   "devDependencies": {
-    "jspecs": "~0.2.0"
+    "jspecs": "~0.2.0",
+    "jshint": "~2.4.3"
   }
 }

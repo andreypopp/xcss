@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 /**
  * XCSS object model
  */

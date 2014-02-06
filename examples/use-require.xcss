@@ -1,7 +1,5 @@
 @require "path" as path;
-@require "./coloredposition" as mod;
 
 .Component {
   source: {path.dirname(__filename)};
-  mod.colored-position: red;
 }

@@ -1,5 +1,7 @@
 @import "path" as path;
+@import "./coloredposition" as coloredposition;
 
 .Component {
   source: {path.dirname(__filename)};
+  coloredposition: red;
 }

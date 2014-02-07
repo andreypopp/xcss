@@ -29,10 +29,9 @@ Stylesheet.prototype.extend = function() {
 }
 
 Stylesheet.prototype.toString = function() {
-  return stringify({
-    type: 'stylesheet',
-    stylesheet: this.flatten().extend().removePlaceholders()
-  });
+  var stylesheet = this.flatten().extend().removePlaceholders();
+  console.log(stylesheet.rules);
+  return stringify({type: 'stylesheet', stylesheet: stylesheet});
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {
@@ -151,7 +150,9 @@ function removePlaceholderRules(rules) {
 
   return rules
     .map(removePlaceholderSelectors)
-    .filter(function(rule) { return rule.selectors.length > 0 });
+    .filter(function(rule) {
+      return rule.selectors.length > 0 && rule.declarations.length > 0;
+    });
 }
 
 function toArray(o) {

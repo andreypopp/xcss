@@ -4,6 +4,6 @@ Compile xCSS to CSS and print the result.
 
 options:
 
-    -c, --compile  Compile xCSS to JavaScript and print the result
+    -c, --compile  Print the result of translation from xCSS to JavaScript
 
        -h, --help  Show this message and exit

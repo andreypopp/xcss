@@ -20,7 +20,7 @@ describe 'compiler' {
     it 'compiles to xcss.Import' {
       compile(src) should not throw;
       var js = compile(src);
-      js should contain 'xcss.Import(require("path"))'
+      js should contain 'xcss.import(require("path"))'
     }
   }
 }

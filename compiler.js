@@ -53,7 +53,7 @@ Compiler.prototype.stylesheet = function(node){
   }, this);
 
   return b.callExpression(
-    b.identifier('xcss.Stylesheet'),
+    b.identifier('xcss.stylesheet'),
     rules.map(this.visit));
 };
 
@@ -73,7 +73,7 @@ Compiler.prototype.rule = function(node){
 
   var selectors = node.selectors.map(b.literal);
   return b.callExpression(
-    b.identifier('xcss.Rule'),
+    b.identifier('xcss.rule'),
     selectors.concat(declarations));
 };
 
@@ -102,7 +102,7 @@ Compiler.prototype.import = function(node) {
     b.identifier('require'),
     [b.literal(value)]);
   return b.callExpression(
-    b.identifier('xcss.Import'),
+    b.identifier('xcss.import'),
     [reqCall]);
 };
 

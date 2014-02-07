@@ -5,7 +5,7 @@ function coloredPosition(color) {
 }
 
 function ColoredPosition(decl) {
-  return xcss.Rule('body', decl, coloredPosition('red'));
+  return xcss.rule('body', decl, coloredPosition('red'));
 }
 
 module.exports = {

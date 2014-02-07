@@ -28,9 +28,9 @@ Compiles into the CommonJS module using xCSS object model:
     var xcss = require("xcss"),
         theme = require("some-pkg/theme");
 
-    module.exports = xcss.Stylesheet(
-      xcss.Import(require("./other-stylesheet.xcss")),
-      xcss.Rule('.Component', {
+    module.exports = xcss.stylesheet(
+      xcss.import(require("./other-stylesheet.xcss")),
+      xcss.rule('.Component', {
         width: '12px',
         backgroundColor: theme.bgColor
       })

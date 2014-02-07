@@ -6,14 +6,13 @@
 var stringify = require('css-stringify');
 var flatMap   = require('flatmap');
 
-function Stylesheet() {
-  if (!(this instanceof Stylesheet)) return construct(Stylesheet, arguments);
+function Stylesheet(rules) {
   this.type = 'stylesheet';
-  this.rules = toArray(arguments);
+  this.rules = rules;
 }
 
 Stylesheet.prototype.flatten = function() {
-  return construct(Stylesheet, flattenStylesheet(this));
+  return new Stylesheet(flattenStylesheet(this));
 }
 
 Stylesheet.prototype.toString = function() {
@@ -25,28 +24,13 @@ Stylesheet.prototype.concat = function(stylesheet) {
   return new Stylesheet(this.rules.concat(rules));
 }
 
-function Rule() {
-  if (!(this instanceof Rule)) return construct(Rule, arguments);
+function Rule(selectors, declarations) {
   this.type = 'rule';
-  this.selectors = [];
-  this.declarations = [];
-
-  toArray(arguments).forEach(function(arg) {
-    if (isString(arg)) {
-      if (this.declarations.length > 0) {
-        throw new Error('selector values goes after declaration');
-      }
-      this.selectors.push(arg);
-    } else {
-      for (var k in arg) {
-        this.declarations.push({type: 'declaration', property: k, value: arg[k]});
-      }
-    }
-  }, this);
+  this.selectors = selectors;
+  this.declarations = declarations;
 }
 
 function Import(stylesheet) {
-  if (!(this instanceof Import)) return construct(Import, arguments);
   this.type = 'import';
   this.stylesheet = stylesheet;
 }
@@ -66,11 +50,6 @@ function flattenStylesheet(stylesheet, seen) {
   });
 }
 
-function construct(cls, args) {
-  Array.prototype.unshift.call(args, null);
-  return new (Function.prototype.bind.apply(cls, args));
-}
-
 function toArray(o) {
   return Array.prototype.slice.call(o);
 }
@@ -79,8 +58,39 @@ function isString(o) {
   return Object.prototype.toString.call(o) === '[object String]';
 }
 
+function stylesheet() {
+  return new Stylesheet(toArray(arguments));
+}
+
+function rule() {
+  var selectors = [];
+  var declarations = [];
+
+  toArray(arguments).forEach(function(arg) {
+    if (isString(arg)) {
+      if (declarations.length > 0) {
+        throw new Error('selector values goes after declaration');
+      }
+      selectors.push(arg);
+    } else {
+      for (var k in arg) {
+        declarations.push({type: 'declaration', property: k, value: arg[k]});
+      }
+    }
+  });
+
+  return new Rule(selectors, declarations);
+}
+
+function imp(stylesheet) {
+  return new Import(stylesheet);
+}
+
 module.exports = {
   Import: Import,
   Rule: Rule,
-  Stylesheet: Stylesheet
+  Stylesheet: Stylesheet,
+  import: imp,
+  rule: rule,
+  stylesheet: stylesheet
 };

@@ -1,0 +1,1 @@
+@import "./module.xcss" with {width: '12px'};

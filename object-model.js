@@ -198,6 +198,10 @@ function extend(selector) {
   return new Extend(selector);
 }
 
+function mod(func) {
+  return func;
+}
+
 module.exports = {
   Extend: Extend,
   Import: Import,
@@ -206,5 +210,6 @@ module.exports = {
   extend: extend,
   import: imp,
   rule: rule,
-  stylesheet: stylesheet
+  stylesheet: stylesheet,
+  module: mod,
 };

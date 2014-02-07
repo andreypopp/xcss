@@ -60,3 +60,4 @@ function parseExpr(src) {
 }
 
 module.exports = compile;
+module.exports.parseExpr = parseExpr;

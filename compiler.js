@@ -41,11 +41,20 @@ Compiler.prototype.declareRequire = function(id, path) {
 
 // CSS stylesheet -> xcss.Stylesheet
 Compiler.prototype.stylesheet = function(node){
+  var compileAsModule = false;
   var rules = node.stylesheet.rules.filter(function(rule) {
     if (rule.type === 'comment') {
       // TODO: handle comments
       return false;
     }
+
+    if (rule.type === 'module') {
+      compileAsModule = rule.module
+        .split(',')
+        .map(function(a) { return b.identifier(a.trim()) });
+      return false;
+    }
+
     if (rule.type === 'require') {
       var imp = parseRequire(rule.require);
       if (imp) {
@@ -53,12 +62,25 @@ Compiler.prototype.stylesheet = function(node){
         return false;
       }
     }
+
     return true;
   }, this);
 
-  return b.callExpression(
+  var ast = b.callExpression(
     b.identifier('xcss.stylesheet'),
     rules.map(this.visit));
+
+  if (compileAsModule) {
+    ast = b.functionExpression(
+      null,
+      compileAsModule,
+      b.blockStatement([b.returnStatement(ast)]));
+    ast = b.callExpression(
+      b.identifier('xcss.module'),
+      [ast]);
+  }
+
+  return ast;
 };
 
 // CSS rule -> xcss.Rule
@@ -106,13 +128,24 @@ Compiler.prototype.declaration = function(node) {
 
 // @import -> xcss.Import
 Compiler.prototype.import = function(node) {
-  var value = node.import.replace(/"/g, '');
-  var reqCall = b.callExpression(
+  var m = /^"([^"]+)"( +with +(.+))?/.exec(node.import);
+  var value = m[1];
+  var args = m[3];
+
+  var ast = b.callExpression(
     b.identifier('require'),
     [b.literal(value)]);
+
+  if (args) {
+    args = '(' + args + ')';
+    args = compileExpr.parseExpr(args);
+    args = args.expressions ? args.expressions : [args];
+    ast = b.callExpression(ast, args);
+  }
+
   return b.callExpression(
     b.identifier('xcss.import'),
-    [reqCall]);
+    [ast]);
 };
 
 function parseRequire(value) {

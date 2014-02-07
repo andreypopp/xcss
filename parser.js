@@ -336,6 +336,14 @@ module.exports = function(css, options){
   }
 
   /**
+   * Parse module.
+   */
+
+  function atmodule() {
+    return _atrule('module');
+  }
+
+  /**
    * Parse media.
    */
 
@@ -469,6 +477,7 @@ module.exports = function(css, options){
 
     return atkeyframes()
       || atmedia()
+      || atmodule()
       || atsupports()
       || atimport()
       || atrequire()

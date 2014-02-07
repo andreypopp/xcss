@@ -1,0 +1,11 @@
+@import "./simple.xcss";
+
+.a {
+  extend: body;
+  width: 12px;
+}
+
+.b {
+  extend: .a;
+  height: 10px;
+}

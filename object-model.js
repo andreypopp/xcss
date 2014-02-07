@@ -20,8 +20,12 @@ Stylesheet.prototype.flatten = function() {
   return new Stylesheet(flattenRules(this.rules));
 }
 
+Stylesheet.prototype.extend = function() {
+  return new Stylesheet(extendRules(this.rules));
+}
+
 Stylesheet.prototype.toString = function() {
-  return stringify({type: 'stylesheet', stylesheet: this.flatten()});
+  return stringify({type: 'stylesheet', stylesheet: this.flatten().extend()});
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {
@@ -35,9 +39,19 @@ function Rule(selectors, declarations) {
   this.declarations = declarations;
 }
 
+Rule.prototype.addSelector = function(selector) {
+  var selectors = this.selectors.concat(selector);
+  return new Rule(selectors, this.declarations);
+}
+
 function Import(stylesheet) {
   this.type = 'import';
   this.stylesheet = stylesheet;
+}
+
+function Extend(selector) {
+  this.type = 'extend';
+  this.selector = selector;
 }
 
 /**
@@ -53,6 +67,67 @@ function flattenRules(rules, seen) {
     }
     return rule;
   });
+}
+
+/**
+ * Extend stylesheet rules
+ */
+function extendRules(rules) {
+  rules = rules.slice(0);
+
+  var index = {};
+  var changeset = {};
+
+  function removeExtends(rule) {
+    return new Rule(
+      rule.selectors,
+      rule.declarations.filter(function(d) { return d.type !== 'extend'; }));
+  }
+
+  rules.forEach(function(rule, idx) {
+    if (rule.type === 'rule') {
+      var seenExtend = false;
+
+      // add rule to index
+      rule.selectors.forEach(function(selector) {
+        index[selector] = index[selector] || [];
+        index[selector].push({rule: rule, idx: idx});
+      });
+
+      // process extends
+      rule.declarations.forEach(function(decl) {
+        if (decl.type === 'extend') {
+          seenExtend = true;
+          var extendables = index[decl.selector];
+          if (!extendables) {
+            throw new Error("cannot extend " + decl.selector);
+          }
+          extendables.forEach(function(extendable) {
+            var extendedRule = changeset[extendable.idx] || extendable.rule;
+
+            // add extendable rule to the index for the extended rule selectors
+            // so we enable chaining
+            rule.selectors.forEach(function(selector) {
+              index[selector] = index[selector] || [];
+              index[selector].push(extendable);
+            });
+
+            changeset[extendable.idx] = extendedRule.addSelector(rule.selectors);
+          });
+        }
+      });
+
+      if (seenExtend) {
+        changeset[idx] = removeExtends(changeset[idx] || rule);
+      }
+    }
+  });
+
+  for (var idx in changeset) {
+    rules[idx] = changeset[idx];
+  }
+
+  return rules;
 }
 
 function toArray(o) {
@@ -78,8 +153,12 @@ function rule() {
       }
       selectors.push(arg);
     } else {
-      for (var k in arg) {
-        declarations.push({type: 'declaration', property: k, value: arg[k]});
+      if (!arg.type) {
+        for (var k in arg) {
+          declarations.push({type: 'declaration', property: k, value: arg[k]});
+        }
+      } else {
+        declarations.push(arg);
       }
     }
   });
@@ -91,10 +170,16 @@ function imp(stylesheet) {
   return new Import(stylesheet);
 }
 
+function extend(selector) {
+  return new Extend(selector);
+}
+
 module.exports = {
+  Extend: Extend,
   Import: Import,
   Rule: Rule,
   Stylesheet: Stylesheet,
+  extend: extend,
   import: imp,
   rule: rule,
   stylesheet: stylesheet

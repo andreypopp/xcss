@@ -81,10 +81,15 @@ Compiler.prototype.rule = function(node){
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpr(node.value);
+  var identifier = getIdentifier(name);
 
-  if (this.scope[getIdentifier(name)]) {
+  if (this.scope[identifier]) {
     return b.callExpression(
       b.identifier(name),
+      [value]);
+  } else if (identifier === 'extend') {
+    return b.callExpression(
+      b.identifier('xcss.extend'),
       [value]);
   } else {
     return b.objectExpression([

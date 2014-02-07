@@ -1,0 +1,14 @@
+body,
+.a,
+.b {
+  margin: auto;
+}
+
+.a,
+.b {
+  width: 12px;
+}
+
+.b {
+  height: 10px;
+}

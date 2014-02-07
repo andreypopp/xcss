@@ -3,8 +3,25 @@
  * XCSS object model
  */
 
-var stringify   = require('css-stringify');
-var flatMap     = require('flatmap');
+var stringify = require('css-stringify');
+var flatMap   = require('flatmap');
+
+module.exports = {
+  Extend: Extend,
+  Import: Import,
+  Rule: Rule,
+  Stylesheet: Stylesheet,
+
+  extend: extend,
+  import: imp,
+  rule: rule,
+  stylesheet: stylesheet,
+  module: mod,
+};
+
+var linearize   = require('./transforms/linearize-imports');
+var inheritance = require('./transforms/rule-inheritance');
+var cleanup     = require('./transforms/cleanup');
 
 function Stylesheet(rules) {
   this.type = 'stylesheet';
@@ -16,20 +33,27 @@ function Stylesheet(rules) {
   }
 }
 
-Stylesheet.prototype.removePlaceholders = function() {
-  return new Stylesheet(removePlaceholderRules(this.rules));
+Stylesheet.prototype.transform = function(fn) {
+  return fn(this);
 }
 
-Stylesheet.prototype.flatten = function() {
-  return new Stylesheet(flattenRules(this.rules));
+Stylesheet.prototype.filter = function(fn) {
+  return new Stylesheet(this.rules.filter(fn));
 }
 
-Stylesheet.prototype.extend = function() {
-  return new Stylesheet(extendRules(this.rules));
+Stylesheet.prototype.map = function(fn) {
+  return new Stylesheet(this.rules.map(fn));
+}
+
+Stylesheet.prototype.flatMap = function(fn) {
+  return new Stylesheet(flatMap(this.rules, fn));
 }
 
 Stylesheet.prototype.toString = function() {
-  var stylesheet = this.flatten().extend().removePlaceholders();
+  var stylesheet = this
+    .transform(linearize)
+    .transform(inheritance)
+    .transform(cleanup);
   return stringify({type: 'stylesheet', stylesheet: stylesheet});
 }
 
@@ -49,6 +73,18 @@ Rule.prototype.addSelector = function(selector) {
   return new Rule(selectors, this.declarations);
 }
 
+Rule.prototype.filter = function(fn) {
+  return new Rule(this.selectors, this.declarations.filter(fn));
+}
+
+Rule.prototype.map = function(fn) {
+  return new Rule(this.selectors, this.declarations.map(fn));
+}
+
+Rule.prototype.flatMap = function(fn) {
+  return new Rule(this.selectors, flatMap(this.declarations, fn));
+}
+
 function Import(stylesheet) {
   this.type = 'import';
   this.stylesheet = stylesheet;
@@ -57,109 +93,6 @@ function Import(stylesheet) {
 function Extend(selector) {
   this.type = 'extend';
   this.selector = selector;
-}
-
-/**
- * Flatten stylesheet hierarchy
- */
-function flattenRules(rules, seen) {
-  seen = seen || [];
-  return flatMap(rules, function(rule) {
-    if (rule.type === 'import') {
-      if (seen.indexOf(rule.stylesheet) > -1) return [];
-      seen.push(rule.stylesheet);
-      return flattenRules(rule.stylesheet.rules, seen);
-    }
-    return rule;
-  });
-}
-
-/**
- * Extend stylesheet rules
- */
-function extendRules(rules) {
-  rules = rules.slice(0);
-
-  var index = {};
-  var changeset = {};
-
-  function removeExtends(rule) {
-    return new Rule(
-      rule.selectors,
-      rule.declarations.filter(function(d) { return d.type !== 'extend'; }));
-  }
-
-  rules.forEach(function(rule, idx) {
-    if (rule.type === 'rule') {
-      var seenExtend = false;
-
-      // add rule to index
-      // TODO: handle complex selectors, like .a > .b and so
-      rule.selectors.forEach(function(selector) {
-        index[selector] = index[selector] || [];
-        index[selector].push({rule: rule, idx: idx});
-      });
-
-      // process extends
-      rule.declarations.forEach(function(decl) {
-        if (decl.type === 'extend') {
-          seenExtend = true;
-          var extendables = index[decl.selector];
-          if (!extendables) {
-            throw new Error("cannot extend " + decl.selector);
-          }
-          extendables.forEach(function(extendable) {
-            var extendedRule = changeset[extendable.idx] || extendable.rule;
-
-            // add extendable rule to the index for the extended rule selectors
-            // so we enable chaining
-            // TODO: handle complex selectors, like .a > .b and so
-            rule.selectors.forEach(function(selector) {
-              index[selector] = index[selector] || [];
-              index[selector].push(extendable);
-            });
-
-            changeset[extendable.idx] = extendedRule.addSelector(rule.selectors);
-          });
-        }
-      });
-
-      if (seenExtend) {
-        changeset[idx] = removeExtends(changeset[idx] || rule);
-      }
-    }
-  });
-
-  for (var idx in changeset) {
-    rules[idx] = changeset[idx];
-  }
-
-  return rules;
-}
-
-function removePlaceholderRules(rules) {
-  rules = rules.slice(0);
-
-  function removePlaceholderSelectors(rule) {
-    var selectors = rule.selectors.filter(function(selector) {
-      return !/%[a-zA-Z]/.exec(selector);
-    });
-    return new Rule(selectors, rule.declarations);
-  }
-
-  return rules
-    .map(removePlaceholderSelectors)
-    .filter(function(rule) {
-      return rule.selectors.length > 0 && rule.declarations.length > 0;
-    });
-}
-
-function toArray(o) {
-  return Array.prototype.slice.call(o);
-}
-
-function isString(o) {
-  return Object.prototype.toString.call(o) === '[object String]';
 }
 
 function stylesheet() {
@@ -202,14 +135,10 @@ function mod(func) {
   return func;
 }
 
-module.exports = {
-  Extend: Extend,
-  Import: Import,
-  Rule: Rule,
-  Stylesheet: Stylesheet,
-  extend: extend,
-  import: imp,
-  rule: rule,
-  stylesheet: stylesheet,
-  module: mod,
-};
+function toArray(o) {
+  return Array.prototype.slice.call(o);
+}
+
+function isString(o) {
+  return Object.prototype.toString.call(o) === '[object String]';
+}

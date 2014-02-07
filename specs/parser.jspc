@@ -1,0 +1,20 @@
+var parse = require('../parser');
+
+describe 'parser' {
+
+  it 'parses declarations with interpolations' {
+
+    parse('body {\n width: 12px {val} 10px;\n }') should not throw
+    parse('body {\n width: 12px {val};\n }') should not throw
+    parse('body {\n width: {val} 10px;\n }') should not throw
+    parse('body {\n width: {val};\n }') should not throw
+    parse('body {\n width: {val}\n }') should not throw
+    parse('body {\n width: {val} }') should throw
+    parse('body { width: {val}; }') should not throw
+  }
+
+  it 'allows member expressions in prop names' {
+
+    parse('m.body {width: 12px;}') should not throw
+  }
+}

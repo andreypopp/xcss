@@ -1,0 +1,9 @@
+@require "./rule.js" as mod;
+
+mod {
+  height: 100px;
+}
+
+mod.rule {
+  margin: 0 auto;
+}

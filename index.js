@@ -3,8 +3,9 @@
  * XCSS Node entry
  */
 
-var fs        = require('fs');
-var compile   = require('./compiler');
+var fs          = require('fs');
+var compile     = require('./compiler');
+var objectModel = require('./object-model');
 
 require.extensions['.xcss'] = function(module, filename) {
   var src = fs.readFileSync(filename, 'utf8');
@@ -13,4 +14,7 @@ require.extensions['.xcss'] = function(module, filename) {
   module._compile(compiled, filename);
 };
 
-module.exports = require('./object-model');
+module.exports = compile;
+
+for (var k in objectModel)
+  module.exports[k] = objectModel[k];

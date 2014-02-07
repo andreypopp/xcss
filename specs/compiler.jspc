@@ -1,0 +1,26 @@
+var compile = require('../compiler');
+
+describe 'compiler' {
+
+  describe '@require compilation' {
+
+    var src = '@require "path" as path;';
+
+    it 'compiles to require(..) call' {
+      compile(src) should not throw;
+      var js = compile(src);
+      js should contain 'path = require("path")'
+    }
+  }
+
+  describe '@import compilation' {
+
+    var src = '@import "path";';
+
+    it 'compiles to xcss.Import' {
+      compile(src) should not throw;
+      var js = compile(src);
+      js should contain 'xcss.Import(require("path"))'
+    }
+  }
+}

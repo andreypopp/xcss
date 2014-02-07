@@ -1,0 +1,5 @@
+@require "path" as path;
+
+body {
+  see: {path.join('x', 'y')}
+}

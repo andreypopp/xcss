@@ -1,0 +1,5 @@
+@import "./simple.xcss";
+
+body {
+  me: use-import;
+}

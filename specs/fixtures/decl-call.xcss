@@ -1,0 +1,6 @@
+@require "./decl.js" as mod;
+
+body {
+  mod: name;
+  mod.decl: hi;
+}

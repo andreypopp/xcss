@@ -1,6 +1,6 @@
 # xCSS
 
-xCSS is a library for programmable stylesheet composition.
+xCSS is a library for programmatic stylesheet composition.
 
 The idea is to produce CSS by composing data structures using JavaScript. That
 way you don't need preprocessors like Sass, Less or Stylus. Instead, all the

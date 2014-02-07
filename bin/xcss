@@ -12,12 +12,14 @@ if (argv.help|| argv.h) {
   process.exit(0);
 }
 
-var file = path.resolve(argv._[2]);
+var file = argv._[2];
 
 if (!file || !fs.existsSync(file)) {
   console.warn('error: provide a filename as an argument');
   process.exit(1);
 }
+
+file = path.resolve(file);
 
 if (argv.compile || argv.c) {
   console.log(compile(fs.readFileSync(file, 'utf8')));

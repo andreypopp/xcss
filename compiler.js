@@ -121,7 +121,7 @@ Compiler.prototype.declaration = function(node) {
     return b.objectExpression([
       b.property(
         'init',
-        b.literal(name),
+        b.literal(node.property),
         value)]);
   }
 };

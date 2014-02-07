@@ -30,7 +30,6 @@ Stylesheet.prototype.extend = function() {
 
 Stylesheet.prototype.toString = function() {
   var stylesheet = this.flatten().extend().removePlaceholders();
-  console.log(stylesheet.rules);
   return stringify({type: 'stylesheet', stylesheet: stylesheet});
 }
 

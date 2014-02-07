@@ -110,7 +110,18 @@ Below you can find the detailed description of xCSS object model.
 
 ### xcss.Stylesheet
 
+#### xcss.Stylesheet.toString(fn)
+#### xcss.Stylesheet.transform(fn)
+#### xcss.Stylesheet.map(fn)
+#### xcss.Stylesheet.filter(fn)
+#### xcss.Stylesheet.flatMap(fn)
+
 ### xcss.Rule
+
+#### xcss.Rule.addSelector(fn)
+#### xcss.Rule.map(fn)
+#### xcss.Rule.filter(fn)
+#### xcss.Rule.flatMap(fn)
 
 ### xcss.Import
 
@@ -123,5 +134,7 @@ Below you can find the detailed description of xCSS object model.
 ### @import
 
 ### @require
+
+### extend declaration and placeholders
 
 ### @module

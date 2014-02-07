@@ -1,5 +1,8 @@
 # xCSS
 
+**WARNING:** This version of xCSS isn't released yet. On npm there's older
+verison of xcss which is just runner for rework transforms.
+
 xCSS is a library for programmatic stylesheet composition.
 
 The idea is to produce CSS by composing data structures using JavaScript. That

@@ -5,9 +5,9 @@ verison of xcss which is just runner for rework transforms.
 
 xCSS is a library for programmatic stylesheet composition.
 
-The idea is to produce CSS by composing data structures using JavaScript. That
-way you don't need preprocessors like Sass, Less or Stylus. Instead, all the
-power of JavaScript is at your fingertips.
+The idea is to produce CSS by composing data structures in JavaScript. That way
+you don't need preprocessors like Sass, Less or Stylus. Instead, all the power
+of JavaScript is at your fingertips.
 
 Moreover xCSS is based on Node.js and allows you to reuse its module system and
 even package manager, npm with thousands of packages there.
@@ -56,4 +56,72 @@ from a given xCSS module:
 
     % xcss ./index.xcss > bundle.css
 
-Run `xcss --help` to see more options.
+Run `xcss --help` to see more options:
+
+    % xcss --help
+    usage: xcss [-ch] <filename>
+
+    Compile xCSS to CSS and print the result.
+
+    options:
+
+        -c, --compile  Print the result of translation from xCSS to JavaScript
+
+          -h, --help  Show this message and exit
+
+## Using from Node.js
+
+xCSS modules are just Node modules but expressed in a different syntax. That
+basically means that you'll be able to require xCSS modules directly:
+
+
+    // this line is needed to install .xcss handle
+    require('xcss');
+
+    // require .xcss directly!
+    var stylesheet = require('./index.xcss');
+
+    // generate CSS and print it
+    console.log(stylesheet.toString());
+
+You can transform stylesheets in any way you want, for example, combine two
+stylsheets together:
+
+    var button = require('./button.xcss');
+    var select = require('./select.xcss');
+
+    console.log(button.concat(select));
+
+Below you can find the detailed description of xCSS object model.
+
+## Functional overview
+
+### Module system
+
+### Rule extensions
+
+### Using JavaScript
+
+### Hooks
+
+### Parametrised modules
+
+## xCSS object model
+
+### xcss.Stylesheet
+
+### xcss.Rule
+
+### xcss.Import
+
+### xcss.Extend
+
+### xcss.Module
+
+## xCSS syntax
+
+### @import
+
+### @require
+
+### @module

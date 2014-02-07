@@ -42,6 +42,10 @@ Compiler.prototype.declareRequire = function(id, path) {
 // CSS stylesheet -> xcss.Stylesheet
 Compiler.prototype.stylesheet = function(node){
   var rules = node.stylesheet.rules.filter(function(rule) {
+    if (rule.type === 'comment') {
+      // TODO: handle comments
+      return false;
+    }
     if (rule.type === 'require') {
       var imp = parseRequire(rule.require);
       if (imp) {

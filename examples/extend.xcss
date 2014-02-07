@@ -1,8 +1,0 @@
-.a {
-  width: 12px;
-}
-
-.b {
-  extend: .a;
-  height: 10px;
-}

@@ -15,7 +15,7 @@ even package manager, npm with thousands of packages there.
 But writing CSS with JavaScript can be verbose. To fix that xCSS provides a
 compiler from xCSS (a language, a superset of CSS) to JavaScript.
 
-Example xCSS modules looks like:
+A xCSS module looks like:
 
     @import "./other-stylesheet.xcss";
 
@@ -26,7 +26,8 @@ Example xCSS modules looks like:
       background-color: {theme.bgColor};
     }
 
-Compiles into the CommonJS module using xCSS object model:
+It compiles into the following JavaScript module which is essentially a CommonJS
+(Node.js) module which uses xCSS object model:
 
     var xcss = require("xcss"),
         theme = require("some-pkg/theme");
@@ -112,15 +113,30 @@ Below you can find the detailed description of xCSS object model.
 
 #### xcss.Stylesheet.toString(fn)
 #### xcss.Stylesheet.transform(fn)
+
+
 #### xcss.Stylesheet.map(fn)
+
+Produce a new stylesheet by running an `fn` function over all rules.
+
 #### xcss.Stylesheet.filter(fn)
+
+Produce a new stylesheet by filtering rules with an `fn` function.
+
 #### xcss.Stylesheet.flatMap(fn)
 
 ### xcss.Rule
 
 #### xcss.Rule.addSelector(fn)
+
 #### xcss.Rule.map(fn)
+
+Produce a new rule by running an `fn` function over all declarations.
+
 #### xcss.Rule.filter(fn)
+
+Produce a new rule by filtering declarations with an `fn` function.
+
 #### xcss.Rule.flatMap(fn)
 
 ### xcss.Import

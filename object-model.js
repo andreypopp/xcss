@@ -16,6 +16,10 @@ function Stylesheet(rules) {
   }
 }
 
+Stylesheet.prototype.removePlaceholders = function() {
+  return new Stylesheet(removePlaceholderRules(this.rules));
+}
+
 Stylesheet.prototype.flatten = function() {
   return new Stylesheet(flattenRules(this.rules));
 }
@@ -25,7 +29,10 @@ Stylesheet.prototype.extend = function() {
 }
 
 Stylesheet.prototype.toString = function() {
-  return stringify({type: 'stylesheet', stylesheet: this.flatten().extend()});
+  return stringify({
+    type: 'stylesheet',
+    stylesheet: this.flatten().extend().removePlaceholders()
+  });
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {
@@ -89,6 +96,7 @@ function extendRules(rules) {
       var seenExtend = false;
 
       // add rule to index
+      // TODO: handle complex selectors, like .a > .b and so
       rule.selectors.forEach(function(selector) {
         index[selector] = index[selector] || [];
         index[selector].push({rule: rule, idx: idx});
@@ -107,6 +115,7 @@ function extendRules(rules) {
 
             // add extendable rule to the index for the extended rule selectors
             // so we enable chaining
+            // TODO: handle complex selectors, like .a > .b and so
             rule.selectors.forEach(function(selector) {
               index[selector] = index[selector] || [];
               index[selector].push(extendable);
@@ -128,6 +137,21 @@ function extendRules(rules) {
   }
 
   return rules;
+}
+
+function removePlaceholderRules(rules) {
+  rules = rules.slice(0);
+
+  function removePlaceholderSelectors(rule) {
+    var selectors = rule.selectors.filter(function(selector) {
+      return !/%[a-zA-Z]/.exec(selector);
+    });
+    return new Rule(selectors, rule.declarations);
+  }
+
+  return rules
+    .map(removePlaceholderSelectors)
+    .filter(function(rule) { return rule.selectors.length > 0 });
 }
 
 function toArray(o) {

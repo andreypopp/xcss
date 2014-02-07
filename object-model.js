@@ -3,12 +3,17 @@
  * XCSS object model
  */
 
-var stringify = require('css-stringify');
-var flatMap   = require('flatmap');
+var stringify   = require('css-stringify');
+var flatMap     = require('flatmap');
 
 function Stylesheet(rules) {
   this.type = 'stylesheet';
   this.rules = rules;
+
+  if (process.env.NODE_ENV !== 'production') {
+    var deepFreeze  = require('deep-freeze');
+    deepFreeze(this);
+  }
 }
 
 Stylesheet.prototype.flatten = function() {

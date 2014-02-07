@@ -12,7 +12,7 @@ function Stylesheet(rules) {
 }
 
 Stylesheet.prototype.flatten = function() {
-  return new Stylesheet(flattenStylesheet(this));
+  return new Stylesheet(flattenRules(this.rules));
 }
 
 Stylesheet.prototype.toString = function() {
@@ -38,13 +38,13 @@ function Import(stylesheet) {
 /**
  * Flatten stylesheet hierarchy
  */
-function flattenStylesheet(stylesheet, seen) {
+function flattenRules(rules, seen) {
   seen = seen || [];
-  return flatMap(stylesheet.rules, function(rule) {
+  return flatMap(rules, function(rule) {
     if (rule.type === 'import') {
       if (seen.indexOf(rule.stylesheet) > -1) return [];
       seen.push(rule.stylesheet);
-      return flattenStylesheet(rule.stylesheet, seen);
+      return flattenRules(rule.stylesheet.rules, seen);
     }
     return rule;
   });

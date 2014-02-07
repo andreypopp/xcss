@@ -39,3 +39,18 @@ Compiles into the CommonJS module using xCSS object model:
 Now to get the CSS string from that you just need to evaluate this module in
 Node, the module's value is a `xcss.Stylesheet` object which has `.toString()`
 method.
+
+## Installation
+
+Install via npm:
+
+    % npm install --global xcss
+
+## Command-line usage
+
+After installation there's `xcss` command line utility, which generates a CSS
+from a given xCSS module:
+
+    % xcss ./index.xcss > bundle.css
+
+Run `xcss --help` to see more options.

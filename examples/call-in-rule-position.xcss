@@ -1,4 +1,4 @@
-@require "./coloredposition.xcss" as mod;
+@require "./coloredposition.js" as mod;
 
 mod.ColoredPosition {
   width: 12px;

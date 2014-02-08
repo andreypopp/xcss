@@ -17,6 +17,9 @@ describe "expression compiler" {
 
   it "compiles an interpolation" {
     t("{12}") should == '12'
+    t("{12 }") should == '12'
+    t("{ 12}") should == '12'
+    t("{ 12 }") should == '12'
   }
 
   it "compiles an interpolation with an object literal" {

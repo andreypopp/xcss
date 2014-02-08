@@ -54,15 +54,15 @@ method.
 
     * [Modules](#modules)
 
-    * [Using JavaScript: variables and utility functions](#using-javascript--variables-and-utility-functions)
+    * [Using JavaScript: variables and utility functions](#using-javascript-variables-and-utility-functions)
 
     * [Rule extensions](#rule-extensions)
 
-    * [Hooks: to extend xCSS](#hooks--how-to-extend-xcss)
+    * [Hooks: to extend xCSS](#hooks-how-to-extend-xcss)
 
-    * [Parametrised modules: to create reusable stylesheets](#parametrised-modules--how-to-create-reusable-stylesheets)
+    * [Parametrised modules: to create reusable stylesheets](#parametrised-modules-how-to-create-reusable-stylesheets)
 
-    * [Writing transforms: to extend xCSS compiler](#writing-transforms--to-extend-xcss-compiler)
+    * [Writing transforms: to extend xCSS compiler](#writing-transforms-to-extend-xcss-compiler)
 
   * [xCSS object model](xcss-object-model)
 

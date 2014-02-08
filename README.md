@@ -156,8 +156,8 @@ xCSS being just a sugar over xCSS object model inherits the module system and
 the entire package ecosystem of Node.js.
 
 There's a one-to-one correspondence between xCSS files and modules, so any xCSS
-file is a module. Modules can include each other by referring to each other by
-`@import` directive:
+file is a module. Modules can include other modules by referring to each other
+by `@import` directive:
 
     @import "./button.xcss";
 

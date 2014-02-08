@@ -110,15 +110,15 @@ Below you can find the detailed description of xCSS object model.
 ## xCSS object model
 
 xCSS features immutable object model. That means every change to an object
-yields a new instance instead of mutating an old one.
+yields a new instance instead of mutating the old one.
 
 For example to add a selector to a rule you have to call method
-`.addSelector(selector)` which would return a new modified copy of original
+`.addSelector(selector)` which would return a new modified copy of the original
 rule:
 
     var modifiedRule = rule.addSelector('body');
 
-That makes reasoning about the state of your stylesheets easier and simplifies
+That makes reasoning about state of your stylesheets easier and simplifies
 implementation which in turn reduces number of possible bugs.
 
 ### `xcss.Stylesheet`

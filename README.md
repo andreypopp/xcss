@@ -10,7 +10,7 @@ you don't need preprocessors like Sass, Less or Stylus. Instead, all the power
 of JavaScript is at your fingertips.
 
 Moreover xCSS is based on Node.js and allows you to reuse its module system and
-even package manager, npm with thousands of packages there.
+even package manager, [npm](http://npmjs.org) with thousands of packages there.
 
 But writing CSS with JavaScript can be verbose. To fix that xCSS provides a
 compiler from xCSS (a language, a superset of CSS) to JavaScript.
@@ -48,13 +48,13 @@ method.
   * [Using from command-line usage](#using-from-command-line)
   * [Using from Node.js](#using-from-nodejs)
   * [Guide](#guide)
-    * [Modules](#modules)
+    * [Modules: to structure your stylesheets](#modules)
     * [Using JavaScript: variables and utility functions](#using-javascript-variables-and-utility-functions)
     * [Rule extensions](#rule-extensions)
     * [Hooks: to extend xCSS](#hooks-how-to-extend-xcss)
     * [Parametrised modules: to create reusable stylesheets](#parametrised-modules-how-to-create-reusable-stylesheets)
     * [Writing transforms: to extend xCSS compiler](#writing-transforms-to-extend-xcss-compiler)
-  * [xCSS object model](xcss-object-model)
+  * [xCSS object model](#xcss-object-model)
     * [`xcss.Stylesheet`](#xcssstylesheet)
     * [`xcss.Stylesheet.toCSS()`](#xcssstylesheettocss)
     * [`xcss.Stylesheet.toString()`](#xcssstylesheettostring)
@@ -64,7 +64,7 @@ method.
     * [`xcss.Stylesheet.filter(fn)`](#xcssstylesheetfilterfn)
     * [`xcss.Stylesheet.flatMap(fn)`](#xcssstylesheetflatmapfn)
     * [`xcss.Rule`](#xcssrule)
-    * [`xcss.rule.addselector(selector)`](#xcssruleaddselectorselector)
+    * [`xcss.Rule.addSelector(selector)`](#xcssruleaddselectorselector)
     * [`xcss.Rule.map(fn)`](#xcssrulemapfn)
     * [`xcss.Rule.filter(fn)`](#xcssrulefilterfn)
     * [`xcss.Rule.flatMap(fn)`](#xcssruleflatmapfn)
@@ -126,16 +126,58 @@ stylsheets together:
 
     console.log(button.concat(select));
 
-Below you can find the detailed description of xCSS object model.
+See the reference on [xCSS object model](#xcss-object-model) to learn all the
+methods available to you.
 
 ## Guide
+
+The most important thing to remember when writing your stylesheets is that xCSS
+language is a superset of CSS. That means that any valid CSS file is also a
+valid xCSS module:
+
+    body {
+      font-family: sans-serif;
+    }
+
+    .main {
+      margin: 0 auto;
+    }
+
+This fact allows you to introduce xCSS to a new project incrementally, starting
+using its features as needed.
+
+This guide walks you through the features unique to xCSS.
 
 ### Modules
 
 Modules answer the question of how to structure stylesheets in your application.
 
-xCSS being just a sugar over xCSS object model inherits module system and entire
-package ecosystem from Node.js.
+xCSS being just a sugar over xCSS object model inherits the module system and
+the entire package ecosystem of Node.js.
+
+There's a one-to-one correspondence between xCSS files and modules, so any xCSS
+file is a module. Modules can include each other by referring to each other by
+`@import` directive:
+
+    @import "./button.xcss";
+
+    body {
+      ...
+    }
+
+But `@import` can also load modules from different npm packages — `@import
+"packagename/stylsheet.xcss"`. Where `packagename` is a name of package
+installed from npm.
+
+Remember that `@import "some/module"` compiles into `require("some/module")` and
+so works according to [Node module
+resolution](http://nodejs.org/api/modules.html#modules_all_together).
+
+Modules allow you to decompose your stylesheets not only into a set of files but
+into a set of reusable packages which are easily installable, thanks to npm.
+
+Also xCSS takes care to not to include same module twice, even if you reference
+it from different places.
 
 ### Using JavaScript: variables and utility functions
 

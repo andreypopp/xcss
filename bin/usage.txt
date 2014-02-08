@@ -6,6 +6,6 @@ Options:
 
     -c, --compress  Compress the resulted stylesheet
 
-     --object-model Print the result of translation from xCSS to JavaScript
+    --object-model  Print the result of translation from xCSS to JavaScript
 
         -h, --help  Show this message and exit

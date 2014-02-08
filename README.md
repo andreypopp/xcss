@@ -92,7 +92,7 @@ from a given xCSS module:
 
 Run `xcss --help` to see more options:
 
-    Usage: xcss [-ch] <filename>
+    Usage: xcss [options] <filename>
 
     Compile xCSS to CSS and print the result.
 
@@ -100,7 +100,7 @@ Run `xcss --help` to see more options:
 
         -c, --compress  Compress the resulted stylesheet
 
-        --object-model Print the result of translation from xCSS to JavaScript
+        --object-model  Print the result of translation from xCSS to JavaScript
 
             -h, --help  Show this message and exit
 

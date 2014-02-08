@@ -45,67 +45,36 @@ Node, the module's value is a `xcss.Stylesheet` object which has `.toCSS()`
 method.
 
   * [Installation](#installation)
-
   * [Using from command-line usage](#using-from-command-line)
-
   * [Using from Node.js](#using-from-nodejs)
-
   * [Guide](#guide)
-
     * [Modules](#modules)
-
     * [Using JavaScript: variables and utility functions](#using-javascript-variables-and-utility-functions)
-
     * [Rule extensions](#rule-extensions)
-
     * [Hooks: to extend xCSS](#hooks-how-to-extend-xcss)
-
     * [Parametrised modules: to create reusable stylesheets](#parametrised-modules-how-to-create-reusable-stylesheets)
-
     * [Writing transforms: to extend xCSS compiler](#writing-transforms-to-extend-xcss-compiler)
-
   * [xCSS object model](xcss-object-model)
-
     * [`xcss.Stylesheet`](#xcssstylesheet)
-
     * [`xcss.Stylesheet.toCSS()`](#xcssstylesheettocss)
-
     * [`xcss.Stylesheet.toString()`](#xcssstylesheettostring)
-
     * [`xcss.Stylesheet.concat(stylesheet)`](#xcssstylesheetconcatstylesheet)
-
     * [`xcss.Stylesheet.transform(fn)`](#xcssstylesheettransformfn)
-
     * [`xcss.Stylesheet.map(fn)`](#xcssstylesheetmapfn)
-
     * [`xcss.Stylesheet.filter(fn)`](#xcssstylesheetfilterfn)
-
     * [`xcss.Stylesheet.flatMap(fn)`](#xcssstylesheetflatmapfn)
-
     * [`xcss.Rule`](#xcssrule)
-
     * [`xcss.rule.addselector(selector)`](#xcssruleaddselectorselector)
-
     * [`xcss.Rule.map(fn)`](#xcssrulemapfn)
-
     * [`xcss.Rule.filter(fn)`](#xcssrulefilterfn)
-
     * [`xcss.Rule.flatMap(fn)`](#xcssruleflatmapfn)
-
     * [`xcss.Import`](#xcssimport)
-
     * [`xcss.Extend`](#xcssextend)
-
     * [`xcss.Module`](#xcssmodule)
-
   * [xCSS syntax references](#xcss-syntax-references)
-
     * [`@import`](#import)
-
     * [`@require`](#require)
-
     * [`extend` declaration and placeholders](#extend-declaration-and-placeholders)
-
     * [`@module`](#module)
 
 ## Installation

@@ -41,7 +41,7 @@ It compiles into the following JavaScript module which is essentially a CommonJS
     );
 
 Now to get the CSS string from that you just need to evaluate this module in
-Node, the module's value is a `xcss.Stylesheet` object which has `.toString()`
+Node, the module's value is a `xcss.Stylesheet` object which has `.toCSS()`
 method.
 
 ## Installation
@@ -83,7 +83,7 @@ basically means that you'll be able to require xCSS modules directly:
     var stylesheet = require('./index.xcss');
 
     // generate CSS and print it
-    console.log(stylesheet.toString());
+    console.log(stylesheet.toCSS());
 
 You can transform stylesheets in any way you want, for example, combine two
 stylsheets together:
@@ -109,41 +109,104 @@ Below you can find the detailed description of xCSS object model.
 
 ## xCSS object model
 
-### xcss.Stylesheet
+xCSS features immutable object model. That means every change to an object
+yields a new instance instead of mutating an old one.
 
-#### xcss.Stylesheet.toString(fn)
-#### xcss.Stylesheet.transform(fn)
+For example to add a selector to a rule you have to call method
+`.addSelector(selector)` which would return a new modified copy of original
+rule:
 
+    var modifiedRule = rule.addSelector('body');
 
-#### xcss.Stylesheet.map(fn)
+That makes reasoning about the state of your stylesheets easier and simplifies
+implementation which in turn reduces number of possible bugs.
 
-Produce a new stylesheet by running an `fn` function over all rules.
+### `xcss.Stylesheet`
 
-#### xcss.Stylesheet.filter(fn)
+Represents a stylesheet, a collection of rules.
 
-Produce a new stylesheet by filtering rules with an `fn` function.
+Can be constructed using `xcss.stylesheet(rules)` function which accepts an
+array of rules.
 
-#### xcss.Stylesheet.flatMap(fn)
+##### `xcss.Stylesheet.toCSS()`
 
-### xcss.Rule
+Serialize stylesheet into a CSS string.
 
-#### xcss.Rule.addSelector(fn)
+##### `xcss.Stylesheet.toString()`
 
-#### xcss.Rule.map(fn)
+Alias for `Stylesheet.toCSS()`.
 
-Produce a new rule by running an `fn` function over all declarations.
+##### `xcss.Stylesheet.concat(stylesheet)`
 
-#### xcss.Rule.filter(fn)
+Concat a stylesheet to another stylesheet and return a combined one as a result.
 
-Produce a new rule by filtering declarations with an `fn` function.
+##### `xcss.Stylesheet.transform(fn)`
 
-#### xcss.Rule.flatMap(fn)
+Apply a transform function `fn(stylesheet)` to stylesheet and a return a new
+transformed stylesheet as a result.
 
-### xcss.Import
+##### `xcss.Stylesheet.map(fn)`
 
-### xcss.Extend
+Produce a new stylesheet by mapping `fn(rule)` function over all rules.
 
-### xcss.Module
+##### `xcss.Stylesheet.filter(fn)`
+
+Produce a new stylesheet by filtering rules with an `fn(rule)` function.
+
+##### `xcss.Stylesheet.flatMap(fn)`
+
+Produce a new stylesheet by running an `fn(rule)` function over all rules where
+`fn` can return not just another rule but an array of rules (an empty one is
+also valid). That way `flatMap` can be used in cases where you want to shrink or
+grow a set of rules in a stylesheet according to some logic.
+
+### `xcss.Rule`
+
+Represents a single rule, a collection of declarations.
+
+Can be constructed using `xcss.rule(declarations)` function which accepts an
+array of declarations.
+
+##### `xcss.Rule.addSelector(selector)`
+
+Produce a new rule by adding a new `selector`.
+
+##### `xcss.Rule.map(fn)`
+
+Produce a new rule by mapping an `fn(declaration)` function over all declarations.
+
+##### `xcss.Rule.filter(fn)`
+
+Produce a new rule by filtering declarations with an `fn(declaration)` function.
+
+##### `xcss.Rule.flatMap(fn)`
+
+Produce a new rule by running an `fn(rule)` function over all rules where `fn`
+can return not just another declaration but an array of declaration (an empty
+one is also valid). That way `flatMap` can be used in cases where you want to
+shrink or grow a set of declaration in a rule according to some logic.
+
+### `xcss.Import`
+
+Represents a reference to another stylesheet which should be included in-place.
+
+Can be constructed using `xcss.import(stylesheet)` function which accepts a
+reference to a stylesheet.
+
+### `xcss.Extend`
+
+A special type of declaration which specifies xCSS rule extension.
+
+Can be constructed using `xcss.extend(selector)` function which accepts a
+selector string.
+
+### `xcss.Module`
+
+Represents a module, parametrized stylesheet.
+
+Can be constructed using `xcss.module(fn)` function which takes another function
+`fn` as an argument. Such function should return a new stylesheet when it's
+called.
 
 ## xCSS syntax
 

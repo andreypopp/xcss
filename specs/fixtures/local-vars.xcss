@@ -1,0 +1,14 @@
+/**
+ * local-vars.xcss
+ *
+ * This example demonstrates using variables defined locally in the module
+ * itself using @var directive.
+ */
+
+@vars {
+  color: red;
+}
+
+body {
+  color: {vars.color};
+}

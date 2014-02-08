@@ -5,7 +5,9 @@ var minimist  = require('minimist');
 var xcss      = require('../index');
 var compile   = require('../compiler');
 
-var argv = minimist(process.argv, {boolean: ['c', 'compile', 'h', 'help']});
+var argv = minimist(process.argv, {
+  boolean: ['c', 'compile', 'h', 'help', 'object-model']
+});
 
 if (argv.help|| argv.h) {
   usage();
@@ -22,13 +24,13 @@ if (!file || !fs.existsSync(file)) {
 
 file = path.resolve(file);
 
-if (argv.compile || argv.c) {
+if (argv['object-model']) {
   console.log(compile(fs.readFileSync(file, 'utf8')));
 } else {
   var stylesheet = require(file);
   if (stylesheet.type === 'module')
     error(arg + " is a parametrized module and can't generate CSS");
-  console.log(stylesheet.toCSS());
+  console.log(stylesheet.toCSS({compress: argv.c || argv.compress}));
 }
 
 function usage() {

@@ -1,9 +1,11 @@
-usage: xcss [-ch] <filename>
+Usage: xcss [options] <filename>
 
 Compile xCSS to CSS and print the result.
 
-options:
+Options:
 
-    -c, --compile  Print the result of translation from xCSS to JavaScript
+    -c, --compress  Compress the resulted stylesheet
 
-       -h, --help  Show this message and exit
+     --object-model Print the result of translation from xCSS to JavaScript
+
+        -h, --help  Show this message and exit

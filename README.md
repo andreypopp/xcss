@@ -92,16 +92,17 @@ from a given xCSS module:
 
 Run `xcss --help` to see more options:
 
-    % xcss --help
-    usage: xcss [-ch] <filename>
+    Usage: xcss [-ch] <filename>
 
     Compile xCSS to CSS and print the result.
 
-    options:
+    Options:
 
-        -c, --compile  Print the result of translation from xCSS to JavaScript
+        -c, --compress  Compress the resulted stylesheet
 
-          -h, --help  Show this message and exit
+        --object-model Print the result of translation from xCSS to JavaScript
+
+            -h, --help  Show this message and exit
 
 ## Using from Node.js
 
@@ -336,12 +337,12 @@ called.
 
 ## xCSS syntax reference
 
-### @import
+### `@import` directive
 
-### @require
+### `@require` directive
 
-### @vars
+### `@vars` directive
 
-### extend declaration and placeholders
+### `@module` directive
 
-### @module
+### `extend:` declaration

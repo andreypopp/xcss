@@ -50,12 +50,12 @@ Stylesheet.prototype.flatMap = function(fn) {
   return new Stylesheet(this.vars, flatMap(this.rules, fn));
 }
 
-Stylesheet.prototype.toCSS = function() {
+Stylesheet.prototype.toCSS = function(options) {
   var stylesheet = this
     .transform(linearize)
     .transform(inheritance)
     .transform(cleanup);
-  return stringify({type: 'stylesheet', stylesheet: stylesheet});
+  return stringify({type: 'stylesheet', stylesheet: stylesheet}, options);
 }
 
 Stylesheet.prototype.concat = function(stylesheet) {

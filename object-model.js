@@ -58,8 +58,6 @@ Stylesheet.prototype.toCSS = function() {
   return stringify({type: 'stylesheet', stylesheet: stylesheet});
 }
 
-Stylesheet.prototype.toString = Stylesheet.prototype.toCSS;
-
 Stylesheet.prototype.concat = function(stylesheet) {
   var rules = stylesheet.rules || stylesheet;
   return new Stylesheet(this.vars, this.rules.concat(rules));
@@ -135,7 +133,14 @@ function extend(selector) {
 }
 
 function mod(func) {
+  func.toCSS = throwError('module should be instantied before CSS can be produced from it');
+  func.type = 'module';
   return func;
+}
+
+function throwError(msg, cls) {
+  cls = cls || Error;
+  return function() { throw new Error(msg) };
 }
 
 function toArray(o) {

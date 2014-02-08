@@ -12,12 +12,12 @@ if (argv.help|| argv.h) {
   process.exit(0);
 }
 
-var file = argv._[2];
+var arg = argv._[2];
+var file = arg;
 
 if (!file || !fs.existsSync(file)) {
   usage();
   error('provide a filename as an argument');
-  process.exit(1);
 }
 
 file = path.resolve(file);
@@ -25,7 +25,10 @@ file = path.resolve(file);
 if (argv.compile || argv.c) {
   console.log(compile(fs.readFileSync(file, 'utf8')));
 } else {
-  console.log(require(file).toCSS());
+  var stylesheet = require(file);
+  if (stylesheet.type === 'module')
+    error(arg + " is a parametrized module and can't generate CSS");
+  console.log(stylesheet.toCSS());
 }
 
 function usage() {
@@ -34,4 +37,5 @@ function usage() {
 
 function error(msg) {
   console.warn('error:', msg);
+  process.exit(1);
 }

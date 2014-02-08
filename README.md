@@ -58,7 +58,6 @@ method.
   * [xCSS object model](#xcss-object-model)
     * [`xcss.Stylesheet`](#xcssstylesheet)
     * [`xcss.Stylesheet.toCSS()`](#xcssstylesheettocss)
-    * [`xcss.Stylesheet.toString()`](#xcssstylesheettostring)
     * [`xcss.Stylesheet.concat(stylesheet)`](#xcssstylesheetconcatstylesheet)
     * [`xcss.Stylesheet.transform(fn)`](#xcssstylesheettransformfn)
     * [`xcss.Stylesheet.map(fn)`](#xcssstylesheetmapfn)
@@ -253,10 +252,6 @@ array of rules.
 ##### `xcss.Stylesheet.toCSS()`
 
 Serialize stylesheet into a CSS string.
-
-##### `xcss.Stylesheet.toString()`
-
-Alias for `Stylesheet.toCSS()`.
 
 ##### `xcss.Stylesheet.concat(stylesheet)`
 

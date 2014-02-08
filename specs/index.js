@@ -14,7 +14,7 @@ describe('xcss', function() {
 
     var file = path.join(fixtures, fixture);
 
-    var css = require(file).toString() + '\n';
+    var css = require(file).toCSS() + '\n';
     var out = fs.readFileSync(file.replace(/\.xcss$/, '.css'), 'utf8');
 
     it(fixture, function() {

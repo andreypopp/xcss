@@ -49,13 +49,15 @@ Stylesheet.prototype.flatMap = function(fn) {
   return new Stylesheet(flatMap(this.rules, fn));
 }
 
-Stylesheet.prototype.toString = function() {
+Stylesheet.prototype.toCSS = function() {
   var stylesheet = this
     .transform(linearize)
     .transform(inheritance)
     .transform(cleanup);
   return stringify({type: 'stylesheet', stylesheet: stylesheet});
 }
+
+Stylesheet.prototype.toString = Stylesheet.prototype.toCSS;
 
 Stylesheet.prototype.concat = function(stylesheet) {
   var rules = stylesheet.rules || stylesheet;

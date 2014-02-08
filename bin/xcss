@@ -25,7 +25,7 @@ file = path.resolve(file);
 if (argv.compile || argv.c) {
   console.log(compile(fs.readFileSync(file, 'utf8')));
 } else {
-  console.log(require(file).toString());
+  console.log(require(file).toCSS());
 }
 
 function usage() {

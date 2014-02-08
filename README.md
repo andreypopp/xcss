@@ -165,9 +165,9 @@ by `@import` directive:
       ...
     }
 
-But `@import` can also load modules from different npm packages — `@import
-"packagename/stylsheet.xcss"`. Where `packagename` is a name of package
-installed from npm.
+The `@import` directive can also load modules from a different npm package —
+`@import "pkg/style.xcss"` — where `pkg` is a name of a package installed from
+npm.
 
 Remember that `@import "some/module"` compiles into `require("some/module")` and
 so works according to [Node module
@@ -180,6 +180,45 @@ Also xCSS takes care to not to include same module twice, even if you reference
 it from different places.
 
 ### Using JavaScript: variables and utility functions
+
+There's a way to include snippets of JavaScript in your stylesheet. It is useful
+when you want to compute a value of some declaration based on some variable or
+use a function to transform values.
+
+xCSS makes it possible by using `{}`-quotes:
+
+    body {
+      margin: {10 + 20}px;
+    }
+
+Will result in a CSS:
+
+    body {
+      margin: 30px;
+    }
+
+The basic rule is that everything inside `{}` is a plain JavaScript. You can
+even use functions to compute values — `{Math.pow(2, 4)}`. There's no need to
+learn a new language.
+
+But how do you use some variable or function from another module? For that
+there's `@require ... as ...` directive:
+
+    @require "./utils.js" as utils
+
+The line above will call `require("./utils.js")` and bring it into the scope
+under the name `utils`. That allows to use variables and functions declared
+there inside `{}` directly:
+
+    @require "./utils.js" as utils
+
+    body {
+      background: {utils.bg}
+    }
+
+    a {
+      color: {utils.colors.darken("red", 10)}
+    }
 
 ### Rule extensions
 

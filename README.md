@@ -246,8 +246,13 @@ implementation which in turn reduces number of possible bugs.
 
 Represents a stylesheet, a collection of rules.
 
-Can be constructed using `xcss.stylesheet(vars, rules...)` function which accepts an
-array of rules.
+Can be constructed using `xcss.stylesheet(vars, rules...)` function.
+
+Stylesheet has the following attributes:
+
+  * `vars` — variables
+
+  * `rules` — read-only array of rules
 
 ##### `xcss.Stylesheet.toCSS()`
 
@@ -281,8 +286,12 @@ grow a set of rules in a stylesheet according to some logic.
 
 Represents a single rule, a collection of declarations.
 
-Can be constructed using `xcss.rule(declarations)` function which accepts an
+Can be constructed using `xcss.rule(declarations...)` function which accepts an
 array of declarations.
+
+Rule has the following attributes:
+
+  * `declarations` — read-only array of declarations
 
 ##### `xcss.Rule.addSelector(selector)`
 

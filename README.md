@@ -30,9 +30,10 @@ It compiles into the following JavaScript module which is essentially a CommonJS
 (Node.js) module which uses xCSS object model:
 
     var xcss = require("xcss"),
+        vars = {},
         theme = require("some-pkg/theme");
 
-    module.exports = xcss.stylesheet(
+    module.exports = xcss.stylesheet(vars,
       xcss.import(require("./other-stylesheet.xcss")),
       xcss.rule('.Component', {
         width: '12px',
@@ -246,7 +247,7 @@ implementation which in turn reduces number of possible bugs.
 
 Represents a stylesheet, a collection of rules.
 
-Can be constructed using `xcss.stylesheet(rules)` function which accepts an
+Can be constructed using `xcss.stylesheet(vars, rules...)` function which accepts an
 array of rules.
 
 ##### `xcss.Stylesheet.toCSS()`
@@ -334,6 +335,8 @@ called.
 ### @import
 
 ### @require
+
+### @vars
 
 ### extend declaration and placeholders
 

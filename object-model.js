@@ -23,8 +23,9 @@ var linearize   = require('./transforms/linearize-imports');
 var inheritance = require('./transforms/rule-inheritance');
 var cleanup     = require('./transforms/cleanup');
 
-function Stylesheet(rules) {
+function Stylesheet(vars, rules) {
   this.type = 'stylesheet';
+  this.vars = vars;
   this.rules = rules;
 
   if (process.env.NODE_ENV !== 'production') {
@@ -38,15 +39,15 @@ Stylesheet.prototype.transform = function(fn) {
 }
 
 Stylesheet.prototype.filter = function(fn) {
-  return new Stylesheet(this.rules.filter(fn));
+  return new Stylesheet(this.vars, this.rules.filter(fn));
 }
 
 Stylesheet.prototype.map = function(fn) {
-  return new Stylesheet(this.rules.map(fn));
+  return new Stylesheet(this.vars, this.rules.map(fn));
 }
 
 Stylesheet.prototype.flatMap = function(fn) {
-  return new Stylesheet(flatMap(this.rules, fn));
+  return new Stylesheet(this.vars, flatMap(this.rules, fn));
 }
 
 Stylesheet.prototype.toCSS = function() {
@@ -61,7 +62,7 @@ Stylesheet.prototype.toString = Stylesheet.prototype.toCSS;
 
 Stylesheet.prototype.concat = function(stylesheet) {
   var rules = stylesheet.rules || stylesheet;
-  return new Stylesheet(this.rules.concat(rules));
+  return new Stylesheet(this.vars, this.rules.concat(rules));
 }
 
 function Rule(selectors, declarations) {
@@ -97,8 +98,8 @@ function Extend(selector) {
   this.selector = selector;
 }
 
-function stylesheet() {
-  return new Stylesheet(toArray(arguments));
+function stylesheet(vars) {
+  return new Stylesheet(vars, toArray(arguments).slice(1));
 }
 
 function rule() {

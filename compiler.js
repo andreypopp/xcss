@@ -7,6 +7,7 @@ var BaseCompiler  = require('css-stringify/lib/compiler');
 var recast        = require('recast');
 var util          = require('util');
 var toCamelCase   = require('to-camel-case');
+var flatMap       = require('flatmap');
 var parse         = require('./parser');
 var compileExpr   = require('./expression-compiler');
 
@@ -19,71 +20,79 @@ function Compiler(options) {
 
   this.options.xcssModulePath = this.options.xcssModulePath || 'xcss';
 
+  this.moduleParameters = null;
+  this.variables = [];
   this.requires = [buildRequire('xcss', this.options.xcssModulePath)];
   this.scope = {};
 }
 util.inherits(Compiler, BaseCompiler);
 
 Compiler.prototype.compile = function(node){
-  var requires = b.variableDeclaration('var', this.requires);
   var stylesheet = this.stylesheet(node);
-  return recast.print(requires).code +
-    '\n\n' +
-    'module.exports = ' +
-    recast.print(stylesheet).code;
-};
+  var requires = b.variableDeclaration('var', this.requires);
+  var vars = b.variableDeclaration('var', [buildDeclaration('vars', b.objectExpression(this.variables))]);
 
-// add module into scope
-Compiler.prototype.declareRequire = function(id, path) {
-  this.requires.push(buildRequire(id, path));
-  this.scope[id] = true;
-};
+  if (this.moduleParameters) {
 
-// CSS stylesheet -> xcss.Stylesheet
-Compiler.prototype.stylesheet = function(node){
-  var compileAsModule = false;
-  var rules = node.stylesheet.rules.filter(function(rule) {
-    if (rule.type === 'comment') {
-      // TODO: handle comments
-      return false;
-    }
+    stylesheet = buildModule(
+      this.moduleParameters,
+      [vars, b.returnStatement(stylesheet)]);
 
-    if (rule.type === 'module') {
-      compileAsModule = rule.module
-        .split(',')
-        .map(function(a) { return b.identifier(a.trim()) });
-      return false;
-    }
+    return recast.print(requires).code + '\n\n' +
+      'module.exports = ' +
+      recast.print(stylesheet).code;
 
-    if (rule.type === 'require') {
-      var imp = parseRequire(rule.require);
-      if (imp) {
-        this.declareRequire(imp.id, imp.path);
-        return false;
-      }
-    }
+  } else {
 
-    return true;
-  }, this);
-
-  var ast = b.callExpression(
-    b.identifier('xcss.stylesheet'),
-    rules.map(this.visit));
-
-  if (compileAsModule) {
-    ast = b.functionExpression(
-      null,
-      compileAsModule,
-      b.blockStatement([b.returnStatement(ast)]));
-    ast = b.callExpression(
-      b.identifier('xcss.module'),
-      [ast]);
+    return recast.print(requires).code + '\n' +
+      recast.print(vars).code + '\n\n' +
+      'module.exports = ' +
+      recast.print(stylesheet).code;
   }
-
-  return ast;
 };
 
-// CSS rule -> xcss.Rule
+/**
+ * Compile stylesheet.
+ */
+Compiler.prototype.stylesheet = function(node){
+  var rules = node.stylesheet.rules.map(this.visit).filter(Boolean);
+
+  return b.callExpression(
+    b.identifier('xcss.stylesheet'),
+    [b.identifier('vars')].concat(rules));
+};
+
+/**
+ * Compile comment.
+ */
+Compiler.prototype.comment = function(node) {
+  // TODO: emit comments as well
+  return false;
+};
+
+/**
+ * Compile @require.
+ */
+Compiler.prototype.require = function(node) {
+  this.requires.push(buildRequire(node.id, node.path));
+  this.scope[node.id] = true;
+  return false;
+};
+
+/**
+ * Compile @module.
+ */
+Compiler.prototype.module = function(node){
+  this.moduleParameters = node.module
+    .split(',')
+    .map(function(a) { return b.identifier(a.trim()) });
+
+  return false;
+}
+
+/**
+ * Compile CSS rule.
+ */
 Compiler.prototype.rule = function(node){
   var declarations = node.declarations.map(this.visit);
 
@@ -95,7 +104,7 @@ Compiler.prototype.rule = function(node){
         b.identifier(name),
         declarations);
     }
-  }
+  } 
 
   var selectors = node.selectors.map(b.literal);
   return b.callExpression(
@@ -103,7 +112,22 @@ Compiler.prototype.rule = function(node){
     selectors.concat(declarations));
 };
 
-// CSS declaration to {prop: val, ...} or call
+/**
+ * Compile @vars.
+ */
+Compiler.prototype.vars = function(node) {
+  var declarations = node.declarations.map(this.visit);
+
+  this.variables = this.variables.concat(flatMap(declarations, function(expr) {
+    return expr.properties;
+  }));
+
+  return false;
+};
+
+/**
+ * Compile CSS declaration.
+ */
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpr(node.value);
@@ -126,7 +150,9 @@ Compiler.prototype.declaration = function(node) {
   }
 };
 
-// @import -> xcss.Import
+/**
+ * Compile @import
+ */
 Compiler.prototype.import = function(node) {
   var m = /^"([^"]+)"( +with +(.+))?/.exec(node.import);
   var value = m[1];
@@ -148,11 +174,6 @@ Compiler.prototype.import = function(node) {
     [ast]);
 };
 
-function parseRequire(value) {
-  var m = /^"([^"]+)" +as +([a-zA-Z_][a-zA-Z0-9_]*)$/.exec(value.trim());
-  if (m) return {path: m[1], id: m[2]};
-}
-
 function getIdentifier(name) {
   var identifier = name;
   if (name.indexOf('.') > -1) {
@@ -161,10 +182,22 @@ function getIdentifier(name) {
   return identifier;
 }
 
+function buildModule(params, stmts) {
+  var factory = b.functionExpression(null, params, b.blockStatement(stmts));
+  return b.callExpression(b.identifier('xcss.module'), [factory]);
+}
+
 function buildRequire(id, path) {
-  return b.variableDeclarator(
-    b.identifier(id),
-    b.callExpression(b.identifier('require'), [b.literal(path)]));
+  var expr = b.callExpression(b.identifier('require'), [b.literal(path)]);
+  return buildDeclaration(id, expr);
+}
+
+function buildDeclaration(id, expr) {
+  return b.variableDeclarator(b.identifier(id), expr);
+}
+
+function buildVarProp(id, expr) {
+  return b.property('init', b.literal(id), expr);
 }
 
 module.exports = function(src, options) {

@@ -436,7 +436,19 @@ module.exports = function(css, options){
    */
 
   function atrequire() {
-    return _atrule('require');
+    var pos = position();
+    var m = match(new RegExp('^@require *([^;\\n]+);'));
+    if (!m) return;
+
+    var val = trim(m[1]);
+    m = new RegExp('^"([^"]+)" +as +([a-zA-Z_][a-zA-Z0-9_]*)$').exec(val);
+    if (!m) return;
+
+    return pos({
+      type: 'require',
+      id: trim(m[2]),
+      path: trim(m[1])
+    });
   }
 
   /**
@@ -475,7 +487,8 @@ module.exports = function(css, options){
   function atrule() {
     if (css[0] != '@') return;
 
-    return atkeyframes()
+    return atvars()
+      || atkeyframes()
       || atmedia()
       || atmodule()
       || atsupports()
@@ -486,6 +499,23 @@ module.exports = function(css, options){
       || atdocument()
       || atpage()
       || athost();
+  }
+
+  /**
+   * Parse @vars.
+   */
+
+  function atvars() {
+    var pos = position();
+    var m = match(/^@vars[\n\t ]*/);
+
+    if (!m) return;
+    comments();
+
+    return pos({
+      type: 'vars',
+      declarations: declarations()
+    });
   }
 
   /**

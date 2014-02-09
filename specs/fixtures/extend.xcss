@@ -1,0 +1,21 @@
+@import "./simple.xcss";
+
+%placeholder {
+  message: 'hello';
+}
+
+.a {
+  extend: body;
+  width: 12px;
+}
+
+.b {
+  extend: .a;
+  extend: %placeholder;
+  height: 10px;
+}
+
+.c {
+  extend: %placeholder;
+  wow: such css;
+}

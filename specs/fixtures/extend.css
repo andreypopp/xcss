@@ -1,0 +1,23 @@
+body,
+.a,
+.b {
+  margin: auto;
+}
+
+.b,
+.c {
+  message: 'hello';
+}
+
+.a,
+.b {
+  width: 12px;
+}
+
+.b {
+  height: 10px;
+}
+
+.c {
+  wow: such css;
+}

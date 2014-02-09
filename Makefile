@@ -9,7 +9,8 @@ lint:
 	@$(BIN)/jshint *.js
 
 test::
-	@$(BIN)/jspecs specs/*.jspc specs/*.js
+	@$(BIN)/jspecs specs/*.jspc
+	@$(BIN)/mocha specs/*.js
 
 release-patch: test lint
 	@$(call release,patch)

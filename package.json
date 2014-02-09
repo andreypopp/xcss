@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "jspecs": "~0.2.0",
-    "jshint": "~2.4.3"
+    "jshint": "~2.4.3",
+    "mocha": "~1.17.1"
   }
 }

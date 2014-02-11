@@ -127,7 +127,7 @@ function parse2(toks, scope, incall) {
           tok = incall ? utils.trim(tok) : tok;
           if (tok === 'var') {
             state = 'var';
-          } else if (scope[tok]) {
+          } else if (scope[utils.getIdentifier(tok)]) {
             state = 'id';
           }
           if (!isstring || isstring && tok.length > 0) nodes.push(b.literal(tok));

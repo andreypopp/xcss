@@ -108,7 +108,6 @@ Compiler.prototype.rule = function(node){
         b.identifier(name),
         declarations.map(this.visit));
     } else if (name === ':root') {
-
       declarations = declarations.filter(function(decl) {
         if (/^var\-/.exec(decl.property)) {
           this.localDeclarations.push(makeVar(toCamelCase(decl.property.slice(4)), decl.value));
@@ -172,15 +171,14 @@ Compiler.prototype.import = function(node) {
   var name = this.uniqueName('import');
 
   this.localDeclarations.push(makeDeclaration(name, ast));
-  this.localDeclarations.push(b.expressionStatement(b.callExpression(
-        b.identifier('xcss.runtime.merge'),
-        [b.identifier('vars'), b.memberExpression(b.identifier(name), b.identifier('vars'), false)])));
+  this.localDeclarations.push(makeVarMerge(name));
 
   return b.callExpression(
     b.identifier('xcss.om.import'),
     [b.identifier(name)]);
 };
 
+// xcss.om.module(function($params ...) { $stmts ... })
 function makeModule(params, stmts) {
   stmts = stmts.map(function(stmt) {
     return stmt;
@@ -189,17 +187,29 @@ function makeModule(params, stmts) {
   return b.callExpression(b.identifier('xcss.om.module'), [factory]);
 }
 
+// var $id = require($path)
 function makeRequire(id, path) {
   var expr = b.callExpression(b.identifier('require'), [b.literal(path)]);
   return makeDeclaration(id, expr);
 }
 
+// vars.$id = $value
 function makeVar(id, value) {
   return b.assignmentExpression('=',
     b.memberExpression(b.identifier('vars'), b.identifier(id), false),
     b.literal(value));
 }
 
+// xcss.runtime.merge(vars, $name.vars)
+function makeVarMerge(name) {
+  var from = b.memberExpression(b.identifier(name), b.identifier('vars'), false);
+  var expr = b.callExpression(
+    b.identifier('xcss.runtime.merge'),
+    [b.identifier('vars'), from]);
+  return b.expressionStatement(expr);
+}
+
+// var $id = $value
 function makeDeclaration(id, expr) {
   return b.variableDeclaration('var', [b.variableDeclarator(b.identifier(id), expr)]);
 }

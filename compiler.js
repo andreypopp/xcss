@@ -87,10 +87,7 @@ Compiler.prototype.require = function(node) {
  * Compile @module.
  */
 Compiler.prototype.module = function(node){
-  this.moduleParameters = node.module
-    .split(',')
-    .map(function(a) { return b.identifier(a.trim()) });
-
+  this.moduleParameters = node.module.split(',').map(function(a) { return a.trim() });
   return false;
 }
 
@@ -110,7 +107,7 @@ Compiler.prototype.rule = function(node){
     } else if (name === ':root') {
       declarations = declarations.filter(function(decl) {
         if (/^var\-/.exec(decl.property)) {
-          this.localDeclarations.push(makeVar(toCamelCase(decl.property.slice(4)), decl.value));
+          this.localDeclarations.push(makeVar(decl.property.slice(4), decl.value));
           return false;
         }
         return true;
@@ -171,7 +168,7 @@ Compiler.prototype.import = function(node) {
   var name = this.uniqueName('import');
 
   this.localDeclarations.push(makeDeclaration(name, ast));
-  this.localDeclarations.push(makeVarMerge(name));
+  this.localDeclarations.push(makeVarMerge([name]));
 
   return b.callExpression(
     b.identifier('xcss.om.import'),
@@ -180,9 +177,8 @@ Compiler.prototype.import = function(node) {
 
 // xcss.om.module(function($params ...) { $stmts ... })
 function makeModule(params, stmts) {
-  stmts = stmts.map(function(stmt) {
-    return stmt;
-  });
+  stmts.splice(1, 0, makeVarMerge(params));
+  params = params.map(b.identifier);
   var factory = b.functionExpression(null, params, b.blockStatement(stmts));
   return b.callExpression(b.identifier('xcss.om.module'), [factory]);
 }
@@ -196,16 +192,18 @@ function makeRequire(id, path) {
 // vars.$id = $value
 function makeVar(id, value) {
   return b.assignmentExpression('=',
-    b.memberExpression(b.identifier('vars'), b.identifier(id), false),
+    b.memberExpression(b.identifier('vars'), b.literal(id), true),
     b.literal(value));
 }
 
 // xcss.runtime.merge(vars, $name.vars)
-function makeVarMerge(name) {
-  var from = b.memberExpression(b.identifier(name), b.identifier('vars'), false);
+function makeVarMerge(names) {
+  names = names.map(function(name) {
+    return b.memberExpression(b.identifier(name), b.identifier('vars'), false);
+  });
   var expr = b.callExpression(
     b.identifier('xcss.runtime.merge'),
-    [b.identifier('vars'), from]);
+    [b.identifier('vars')].concat(names));
   return b.expressionStatement(expr);
 }
 

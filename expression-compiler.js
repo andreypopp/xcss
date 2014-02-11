@@ -3,7 +3,6 @@
  * XCSS expression compiler
  */
 
-var toCamelCase = require('to-camel-case');
 var recast      = require('recast');
 var flatMap     = require('flatmap');
 var utils       = require('./utils');
@@ -103,9 +102,6 @@ function parse2(toks, scope, incall) {
           var args = parse2(toks, scope, true);
           if (!args[0]) {
             throw new Error('unknown var(...) reference');
-          }
-          if (args[0].type === 'Literal') {
-            args[0].value = toCamelCase(args[0].value);
           }
           var node = b.memberExpression(b.identifier('vars'), args[0], true)
           if (args[1]) {

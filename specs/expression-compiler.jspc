@@ -23,7 +23,7 @@ describe "expression compiler" {
   it "compiles vars" {
     t("var(x)") should == 'vars["x"]'
     t("var(x, 12)") should == 'vars["x"] || "12"'
-    t("var(x-x)") should == 'vars["xX"]'
+    t("var(x-x)") should == 'vars["x-x"]'
     t("var({x})") should == 'vars[x]'
     t("var({x}, 12)") should == 'vars[x] || "12"'
   }

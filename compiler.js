@@ -7,7 +7,6 @@ var BaseCompiler      = require('css-stringify/lib/compiler');
 var recast            = require('recast');
 var util              = require('util');
 var toCamelCase       = require('to-camel-case');
-var flatMap           = require('flatmap');
 var parse             = require('./parser');
 var utils             = require('./utils');
 var compileExpression = require('./expression-compiler');

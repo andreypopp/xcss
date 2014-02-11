@@ -1,3 +1,5 @@
+"use strict";
+
 var recast  = require('recast');
 
 function trim(tok) {
@@ -9,7 +11,7 @@ function parseExpression(src) {
 }
 
 function getIdentifier(name) {
-  if (!(typeof name === 'string')) return name;
+  if (typeof name !== 'string') return name;
   var identifier = name;
   if (name.indexOf('.') > -1) {
     identifier = name.split('.')[0];

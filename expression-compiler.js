@@ -94,12 +94,13 @@ function parse2(toks, scope, incall) {
     var isstring = typeof tok === 'string';
     switch (tok) {
       case '(':
+        var args;
         if (state === 'id') {
-          var args = parse2(toks, scope, true);
+          args = parse2(toks, scope, true);
           nodes.push(b.callExpression(b.identifier(nodes.pop().value), args));
         } else if (state === 'var') {
           nodes.pop();
-          var args = parse2(toks, scope, true);
+          args = parse2(toks, scope, true);
           if (!args[0]) {
             throw new Error('unknown var(...) reference');
           }

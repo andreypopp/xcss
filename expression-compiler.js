@@ -5,6 +5,7 @@
 
 var recast  = require('recast');
 var flatMap = require('flatmap');
+var utils   = require('./utils');
 var b       = recast.types.builders;
 
 function compile(str, scope) {
@@ -44,7 +45,7 @@ function compile1(str) {
         depth -= 1;
         if (depth === 0) {
           buffer += chunk;
-          if (buffer.length > 0) nodes.push(parseExpression(buffer));
+          if (buffer.length > 0) nodes.push(utils.parseExpression(buffer));
           buffer = '';
         } else {
           buffer += chunk + '}';
@@ -123,7 +124,7 @@ function parse2(toks, scope, incall) {
         if (typeof tok === 'object') {
           nodes.push(tok)
         } else {
-          tok = incall ? normalize(tok) : tok;
+          tok = incall ? utils.trim(tok) : tok;
           if (tok === 'var') {
             state = 'var';
           } else if (scope[tok]) {
@@ -140,13 +141,4 @@ function parse2(toks, scope, incall) {
   return nodes;
 }
 
-function normalize(tok) {
-  return tok.trim ? tok.trim() : tok;
-}
-
-function parseExpression(src) {
-  return recast.parse(src).program.body[0].expression;
-}
-
 module.exports = compile;
-module.exports.parseExpression = parseExpression;

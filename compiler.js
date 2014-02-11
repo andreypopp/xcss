@@ -9,6 +9,7 @@ var util              = require('util');
 var toCamelCase       = require('to-camel-case');
 var flatMap           = require('flatmap');
 var parse             = require('./parser');
+var utils             = require('./utils');
 var compileExpression = require('./expression-compiler');
 
 var b = recast.types.builders;
@@ -41,16 +42,16 @@ Compiler.prototype.compile = function(node){
       this.moduleParameters,
       this.localDeclarations.concat(b.returnStatement(stylesheet)));
 
-    return print(this.globalDeclarations) + '\n\n' +
+    return utils.print(this.globalDeclarations) + '\n\n' +
       'module.exports = ' +
-      print(stylesheet);
+      utils.print(stylesheet);
 
   } else {
 
-    return print(this.globalDeclarations) + '\n' +
-      print(this.localDeclarations) + '\n\n' +
+    return utils.print(this.globalDeclarations) + '\n' +
+      utils.print(this.localDeclarations) + '\n\n' +
       'module.exports = ' +
-      print(stylesheet);
+      utils.print(stylesheet);
   }
 };
 
@@ -102,7 +103,7 @@ Compiler.prototype.rule = function(node){
   // probably a call in rule position
   if (node.selectors.length === 1 && node.selectors[0].indexOf(' ') === -1) {
     var name = toCamelCase(node.selectors[0]);
-    if (this.scope[getIdentifier(name)]) {
+    if (this.scope[utils.getIdentifier(name)]) {
       return b.callExpression(
         b.identifier(name),
         declarations.map(this.visit));
@@ -130,7 +131,7 @@ Compiler.prototype.rule = function(node){
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpression(node.value, this.scope);
-  var identifier = getIdentifier(name);
+  var identifier = utils.getIdentifier(name);
 
   if (this.scope[identifier]) {
     return b.callExpression(
@@ -163,7 +164,7 @@ Compiler.prototype.import = function(node) {
 
   if (args) {
     args = '(' + args + ')';
-    args = compileExpression.parseExpression(args);
+    args = utils.parseExpression(args);
     args = args.expressions ? args.expressions : [args];
     ast = b.callExpression(ast, args);
   }
@@ -180,22 +181,6 @@ Compiler.prototype.import = function(node) {
     [b.identifier(name)]);
 };
 
-function getIdentifier(name) {
-  var identifier = name;
-  if (name.indexOf('.') > -1) {
-    identifier = name.split('.')[0];
-  }
-  return identifier;
-}
-
-function print(nodes) {
-  if (Array.isArray(nodes)) {
-    return nodes.map(function(node) { return recast.print(node).code }).join('\n');
-  } else {
-    return recast.print(nodes).code;
-  }
-}
-
 function makeModule(params, stmts) {
   var factory = b.functionExpression(null, params, b.blockStatement(stmts));
   return b.callExpression(b.identifier('xcss.om.module'), [factory]);
@@ -204,7 +189,6 @@ function makeModule(params, stmts) {
 function makeRequire(id, path) {
   var expr = b.callExpression(b.identifier('require'), [b.literal(path)]);
   return makeDeclaration(id, expr);
-      
 }
 
 function makeVar(id, value) {

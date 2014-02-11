@@ -428,7 +428,19 @@ module.exports = function(css, options){
    */
 
   function atimport() {
-    return _atrule('import');
+    var pos = position();
+    var m = match(new RegExp('^@import *([^;\\n]+);'));
+    if (!m) return;
+
+    var val = trim(m[1]);
+    m = new RegExp('^"([^"]+)"( +with +(.+))?$').exec(val);
+    if (!m) return;
+
+    return pos({
+      type: 'import',
+      args: trim(m[3]),
+      import: trim(m[1])
+    });
   }
 
   /**
@@ -447,7 +459,7 @@ module.exports = function(css, options){
     return pos({
       type: 'require',
       id: trim(m[2]),
-      path: trim(m[1])
+      require: trim(m[1])
     });
   }
 

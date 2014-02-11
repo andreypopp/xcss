@@ -11,7 +11,20 @@ var parse             = require('./parser');
 var utils             = require('./utils');
 var compileExpression = require('./expression-compiler');
 
-var b = recast.types.builders;
+var b                    = recast.types.builders;
+var literal              = b.literal;
+var identifier           = b.identifier;
+var memberExpression     = b.memberExpression;
+var callExpression       = b.callExpression;
+var functionExpression   = b.functionExpression;
+var objectExpression     = b.objectExpression;
+var property             = b.property;
+var returnStatement      = b.returnStatement;
+var variableDeclaration  = b.variableDeclaration;
+var variableDeclarator   = b.variableDeclarator;
+var blockStatement       = b.blockStatement;
+var expressionStatement  = b.expressionStatement;
+var assignmentExpression = b.assignmentExpression;
 
 function Compiler(options) {
   options = options || {};
@@ -21,7 +34,7 @@ function Compiler(options) {
   this.options.xcssModulePath = this.options.xcssModulePath || 'xcss';
 
   this.moduleParameters = null;
-  this.localDeclarations = [makeDeclaration('vars', b.objectExpression([]))];
+  this.localDeclarations = [makeDeclaration('vars', objectExpression([]))];
   this.globalDeclarations = [makeRequire('xcss', this.options.xcssModulePath)];
   this.scope = {};
   this.counter = 0;
@@ -39,7 +52,7 @@ Compiler.prototype.compile = function(node){
 
     stylesheet = makeModule(
       this.moduleParameters,
-      this.localDeclarations.concat(b.returnStatement(stylesheet)));
+      this.localDeclarations.concat(returnStatement(stylesheet)));
 
     return utils.print(this.globalDeclarations) + '\n\n' +
       'module.exports = ' +
@@ -60,9 +73,9 @@ Compiler.prototype.compile = function(node){
 Compiler.prototype.stylesheet = function(node){
   var rules = node.stylesheet.rules.map(this.visit).filter(Boolean);
 
-  return b.callExpression(
-    b.identifier('xcss.om.stylesheet'),
-    [b.identifier('vars')].concat(rules));
+  return callExpression(
+    identifier('xcss.om.stylesheet'),
+    [identifier('vars')].concat(rules));
 };
 
 /**
@@ -77,7 +90,7 @@ Compiler.prototype.comment = function(node) {
  * Compile @require.
  */
 Compiler.prototype.require = function(node) {
-  this.globalDeclarations.push(makeRequire(node.id, node.path));
+  this.globalDeclarations.push(makeRequire(node.id, node.require));
   this.scope[node.id] = true;
   return false;
 };
@@ -100,8 +113,8 @@ Compiler.prototype.rule = function(node){
   if (node.selectors.length === 1 && node.selectors[0].indexOf(' ') === -1) {
     var name = toCamelCase(node.selectors[0]);
     if (this.scope[utils.getIdentifier(name)]) {
-      return b.callExpression(
-        b.identifier(name),
+      return callExpression(
+        identifier(name),
         declarations.map(this.visit));
     } else if (name === ':root') {
       declarations = declarations.filter(function(decl) {
@@ -116,9 +129,9 @@ Compiler.prototype.rule = function(node){
     }
   } 
 
-  var selectors = node.selectors.map(b.literal);
-  return b.callExpression(
-    b.identifier('xcss.om.rule'),
+  var selectors = node.selectors.map(literal);
+  return callExpression(
+    identifier('xcss.om.rule'),
     selectors.concat(declarations.map(this.visit)));
 };
 
@@ -128,21 +141,21 @@ Compiler.prototype.rule = function(node){
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpression(node.value, this.scope);
-  var identifier = utils.getIdentifier(name);
+  var id = utils.getIdentifier(name);
 
-  if (this.scope[identifier]) {
-    return b.callExpression(
-      b.identifier(name),
+  if (this.scope[id]) {
+    return callExpression(
+      identifier(name),
       [value]);
-  } else if (identifier === 'extend') {
-    return b.callExpression(
-      b.identifier('xcss.om.extend'),
+  } else if (id=== 'extend') {
+    return callExpression(
+      identifier('xcss.om.extend'),
       [value]);
   } else {
-    return b.objectExpression([
-      b.property(
+    return objectExpression([
+      property(
         'init',
-        b.literal(node.property),
+        literal(node.property),
         value)]);
   }
 };
@@ -151,19 +164,14 @@ Compiler.prototype.declaration = function(node) {
  * Compile @import
  */
 Compiler.prototype.import = function(node) {
-  var m = /^"([^"]+)"( +with +(.+))?/.exec(node.import);
-  var value = m[1];
-  var args = m[3];
+  var ast = callExpression(
+    identifier('require'),
+    [literal(node.import)]);
 
-  var ast = b.callExpression(
-    b.identifier('require'),
-    [b.literal(value)]);
-
-  if (args) {
-    args = '(' + args + ')';
-    args = utils.parseExpression(args);
+  if (node.args) {
+    var args = utils.parseExpression('(' + node.args + ')');
     args = args.expressions ? args.expressions : [args];
-    ast = b.callExpression(ast, args);
+    ast = callExpression(ast, args);
   }
 
   var name = this.uniqueName('import');
@@ -171,46 +179,46 @@ Compiler.prototype.import = function(node) {
   this.localDeclarations.push(makeDeclaration(name, ast));
   this.localDeclarations.push(makeVarMerge([name]));
 
-  return b.callExpression(
-    b.identifier('xcss.om.import'),
-    [b.identifier(name)]);
+  return callExpression(
+    identifier('xcss.om.import'),
+    [identifier(name)]);
 };
 
 // xcss.om.module(function($params ...) { $stmts ... })
 function makeModule(params, stmts) {
   stmts.splice(1, 0, makeVarMerge(params));
-  params = params.map(b.identifier);
-  var factory = b.functionExpression(null, params, b.blockStatement(stmts));
-  return b.callExpression(b.identifier('xcss.om.module'), [factory]);
+  params = params.map(identifier);
+  var factory = functionExpression(null, params, blockStatement(stmts));
+  return callExpression(identifier('xcss.om.module'), [factory]);
 }
 
 // var $id = require($path)
 function makeRequire(id, path) {
-  var expr = b.callExpression(b.identifier('require'), [b.literal(path)]);
+  var expr = callExpression(identifier('require'), [literal(path)]);
   return makeDeclaration(id, expr);
 }
 
 // vars.$id = $value
 function makeVar(id, expr) {
-  return b.assignmentExpression('=',
-    b.memberExpression(b.identifier('vars'), b.literal(id), true),
+  return assignmentExpression('=',
+    memberExpression(identifier('vars'), literal(id), true),
     expr);
 }
 
 // xcss.runtime.merge(vars, $name.vars)
 function makeVarMerge(names) {
   names = names.map(function(name) {
-    return b.memberExpression(b.identifier(name), b.identifier('vars'), false);
+    return memberExpression(identifier(name), identifier('vars'), false);
   });
-  var expr = b.callExpression(
-    b.identifier('xcss.runtime.merge'),
-    [b.identifier('vars')].concat(names));
-  return b.expressionStatement(expr);
+  var expr = callExpression(
+    identifier('xcss.runtime.merge'),
+    [identifier('vars')].concat(names));
+  return expressionStatement(expr);
 }
 
 // var $id = $value
 function makeDeclaration(id, expr) {
-  return b.variableDeclaration('var', [b.variableDeclarator(b.identifier(id), expr)]);
+  return variableDeclaration('var', [variableDeclarator(identifier(id), expr)]);
 }
 
 module.exports = function(src, options) {

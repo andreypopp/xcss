@@ -8,8 +8,12 @@ install link:
 lint:
 	@$(BIN)/jshint compiler.js expression-compiler.js index.js runtime.js utils.js
 
-test::
+test:: test-unit test-functional
+
+test-unit::
 	@$(BIN)/jspecs specs/*.jspc
+
+test-functional::
 	@$(BIN)/mocha specs/*.js
 
 release-patch: test lint

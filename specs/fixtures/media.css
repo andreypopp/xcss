@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+}
+
+@media condition {
+  body {
+    width: 25px;
+  }
+
+  div {
+    width: 12px;
+  }
+}

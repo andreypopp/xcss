@@ -79,6 +79,16 @@ Compiler.prototype.stylesheet = function(node){
 };
 
 /**
+ * Compile @media
+ */
+Compiler.prototype.media = function(node){
+  var rules = node.rules.map(this.visit).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.media'),
+    [literal(node.media)].concat(rules));
+};
+
+/**
  * Compile comment.
  */
 Compiler.prototype.comment = function(node) {

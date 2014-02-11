@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+}
+
+@media condition {
+  @import "./simple.xcss";
+
+  div {
+    width: 12px;
+  }
+}

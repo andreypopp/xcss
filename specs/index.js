@@ -10,7 +10,7 @@ describe('xcss', function() {
   var xcssModulePath = require.resolve('../index');
 
   fs.readdirSync(fixtures).forEach(function(fixture) {
-    if (!/\.xcss$/.exec(fixture)) return;
+    if (!/\.xcss$/.exec(fixture) || fixture === 'module.xcss') return;
 
     var file = path.join(fixtures, fixture);
 

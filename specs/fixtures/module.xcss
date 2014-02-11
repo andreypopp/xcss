@@ -1,0 +1,5 @@
+@module theme;
+
+body {
+  width: {theme.width};
+}

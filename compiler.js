@@ -107,7 +107,9 @@ Compiler.prototype.rule = function(node){
     } else if (name === ':root') {
       declarations = declarations.filter(function(decl) {
         if (/^var\-/.exec(decl.property)) {
-          this.localDeclarations.push(makeVar(decl.property.slice(4), decl.value));
+          this.localDeclarations.push(makeVar(
+            decl.property.slice(4),
+            compileExpression(decl.value, this.scope)));
           return false;
         }
         return true;
@@ -190,10 +192,10 @@ function makeRequire(id, path) {
 }
 
 // vars.$id = $value
-function makeVar(id, value) {
+function makeVar(id, expr) {
   return b.assignmentExpression('=',
     b.memberExpression(b.identifier('vars'), b.literal(id), true),
-    b.literal(value));
+    expr);
 }
 
 // xcss.runtime.merge(vars, $name.vars)

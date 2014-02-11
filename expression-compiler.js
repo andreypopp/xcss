@@ -134,9 +134,11 @@ function parse2(toks, scope, incall) {
       case '(':
         var args;
         if (state === 'id') {
+          state = undefined;
           args = normalizeArgs(parse2(toks, scope, true));
           nodes.push(callExpression(identifier(nodes.pop().value), args));
         } else if (state === 'var') {
+          state = undefined;
           nodes.pop();
           args = normalizeArgs(parse2(toks, scope, true));
           var node = makeVarAccessor(args[0], args[1]);

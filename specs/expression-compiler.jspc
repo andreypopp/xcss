@@ -8,6 +8,7 @@ function t(v, scope) {
 describe "expression compiler" {
 
   it "compiles a function call" {
+    t("inset 0 var(border-thickness) hsla(0, 0%, 0%, 0.1)") should == '"inset 0 " + vars["border-thickness"] + " hsla(0, 0%, 0%, 0.1)"'
     t("calc(var(x), 12 px)", {calc: true}) should == 'calc(vars["x"], "12 px")'
     t("calc()", {calc: true}) should == 'calc()'
     t("calc(10, 20)", {calc: true}) should == 'calc("10", "20")'

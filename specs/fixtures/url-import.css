@@ -1,0 +1,6 @@
+@import url(as-is)
+
+.i-just-imported-another-module {
+  message: hello;
+  message: undefined;
+}

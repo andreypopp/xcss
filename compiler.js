@@ -3,13 +3,13 @@
  * XCSS compiler
  */
 
-var BaseCompiler  = require('css-stringify/lib/compiler');
-var recast        = require('recast');
-var util          = require('util');
-var toCamelCase   = require('to-camel-case');
-var flatMap       = require('flatmap');
-var parse         = require('./parser');
-var compileExpr   = require('./expression-compiler');
+var BaseCompiler      = require('css-stringify/lib/compiler');
+var recast            = require('recast');
+var util              = require('util');
+var toCamelCase       = require('to-camel-case');
+var flatMap           = require('flatmap');
+var parse             = require('./parser');
+var compileExpression = require('./expression-compiler');
 
 var b = recast.types.builders;
 
@@ -130,7 +130,7 @@ Compiler.prototype.vars = function(node) {
  */
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
-  var value = compileExpr(node.value);
+  var value = compileExpression(node.value, this.scope);
   var identifier = getIdentifier(name);
 
   if (this.scope[identifier]) {
@@ -164,7 +164,7 @@ Compiler.prototype.import = function(node) {
 
   if (args) {
     args = '(' + args + ')';
-    args = compileExpr.parseExpression(args);
+    args = compileExpression.parseExpression(args);
     args = args.expressions ? args.expressions : [args];
     ast = b.callExpression(ast, args);
   }

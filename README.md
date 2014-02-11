@@ -94,6 +94,3 @@ stylsheets together:
     var select = require('./select.xcss');
 
     console.log(button.concat(select));
-
-See the reference on [xCSS object model](#xcss-object-model) to learn all the
-methods available to you.

@@ -16,8 +16,8 @@ describe "expression compiler" {
     t("calc({x})", {calc: true}) should == 'calc(x)'
     t("calc(var({x}, {y}))", {calc: true}) should == 'calc(vars[x] || y)'
     t("calc(var({x}), {y})", {calc: true}) should == 'calc(vars[x], y)'
-    t("calc(x), 12", {calc: true}) should == 'calc("x") + "," + " 12"'
-    t("mod.calc(x), 12", {mod: true}) should == 'mod.calc("x") + "," + " 12"'
+    t("calc(x), 12", {calc: true}) should == 'calc("x") + ", 12"'
+    t("mod.calc(x), 12", {mod: true}) should == 'mod.calc("x") + ", 12"'
   }
 
   it "compiles vars" {
@@ -29,9 +29,9 @@ describe "expression compiler" {
   }
 
   it "should ignore function call if name isn't in scope" {
-    t("calc()") should == '"calc" + "(" + ")"'
-    t("calc(var(x))") should == '"calc" + "(" + vars["x"] + ")"'
-    t("calc(var(x()))", {x: true}) should == '"calc" + "(" + vars[x()] + ")"'
+    t("calc()") should == '"calc()"'
+    t("calc(var(x))") should == '"calc(" + vars["x"] + ")"'
+    t("calc(var(x()))", {x: true}) should == '"calc(" + vars[x()] + ")"'
   }
 
   it "fails on incorrect function call" {

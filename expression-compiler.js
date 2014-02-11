@@ -27,10 +27,24 @@ function compile(str, scope) {
   var nodes = compile2(compile1(str), scope || {});
 
   if (nodes.length === 0) return literal('');
+  return foldLiterals(nodes)
+    .reduce(function(c, e) {return binaryExpression('+', c, e)});
+}
 
+/**
+ * Fold adjacent string literals
+ */
+function foldLiterals(nodes) {
   return nodes.reduce(function(c, e) {
-    return binaryExpression('+', c, e);
-  });
+    if (e.type === 'Literal') {
+      var last = c[c.length - 1];
+      if (last && last.type === 'Literal') {
+        c.pop();
+        return c.concat(literal(last.value + e.value));
+      }
+    }
+    return c.concat(e);
+  }, [])
 }
 
 /**

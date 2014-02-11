@@ -172,9 +172,9 @@ Compiler.prototype.import = function(node) {
   var name = this.uniqueName('import');
 
   this.localDeclarations.push(makeDeclaration(name, ast));
-  this.localDeclarations.push(b.callExpression(
+  this.localDeclarations.push(b.expressionStatement(b.callExpression(
         b.identifier('xcss.runtime.merge'),
-        [b.identifier('vars'), b.memberExpression(b.identifier(name), b.identifier('vars'), false)]));
+        [b.identifier('vars'), b.memberExpression(b.identifier(name), b.identifier('vars'), false)])));
 
   return b.callExpression(
     b.identifier('xcss.om.import'),
@@ -182,6 +182,9 @@ Compiler.prototype.import = function(node) {
 };
 
 function makeModule(params, stmts) {
+  stmts = stmts.map(function(stmt) {
+    return stmt;
+  });
   var factory = b.functionExpression(null, params, b.blockStatement(stmts));
   return b.callExpression(b.identifier('xcss.om.module'), [factory]);
 }

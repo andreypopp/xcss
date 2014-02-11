@@ -1,11 +1,33 @@
 var compile   = require('../expression-compiler');
 var print     = require('recast').print;
 
-function t(v) {
-  return print(compile(v)).code;
+function t(v, scope) {
+  return print(compile(v, scope)).code;
 }
 
 describe "expression compiler" {
+
+  it "compiles a function call" {
+    t("calc()", {calc: true}) should == 'calc()'
+    t("calc(10, 20)", {calc: true}) should == 'calc("10", "20")'
+    t("calc(var(x), 12 px)", {calc: true}) should == 'calc(vars["x"], "12 px")'
+    t("calc(12 px, var(x))", {calc: true}) should == 'calc("12 px", vars["x"])'
+    t("calc(var(x, 10), 12 px)", {calc: true}) should == 'calc(vars["x"] || "10", "12 px")'
+    t("calc({x})", {calc: true}) should == 'calc(x)'
+    t("calc(var({x}, {y}))", {calc: true}) should == 'calc(vars[x] || y)'
+    t("calc(var({x}), {y})", {calc: true}) should == 'calc(vars[x], y)'
+    t("calc(x), 12", {calc: true}) should == 'calc("x") + "," + " 12"'
+  }
+
+  it "should ignore function call if name isn't in scope" {
+    t("calc()") should == '"calc" + "(" + ")"'
+    t("calc(var(x))") should == '"calc" + "(" + vars["x"] + ")"'
+    t("calc(var(x()))", {x: true}) should == '"calc" + "(" + vars[x()] + ")"'
+  }
+
+  it "fails on incorrect function call" {
+    t("calc(x", {calc: true}) should throw
+  }
 
   it "compiles a CSS literal" {
     t("12px") should == '"12px"'

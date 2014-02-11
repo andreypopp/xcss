@@ -164,7 +164,7 @@ Compiler.prototype.import = function(node) {
 
   if (args) {
     args = '(' + args + ')';
-    args = compileExpr.parseExpr(args);
+    args = compileExpr.parseExpression(args);
     args = args.expressions ? args.expressions : [args];
     ast = b.callExpression(ast, args);
   }

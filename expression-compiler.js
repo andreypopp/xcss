@@ -4,60 +4,149 @@
  */
 
 var recast  = require('recast');
+var flatMap = require('flatmap');
 var b       = recast.types.builders;
 
-function compile(value) {
-  var depth = 0;
-  var expressions = [];
-  var buffer = '';
+function compile(str, scope) {
+  if (!/[\(\){}]/.exec(str)) return b.literal(str);
 
-  for (var i = 0, len = value.length; i < len; i++) {
-    var c = value[i];
-    if (c === '{') {
-      depth += 1;
-      if (depth === 1) {
-        if (buffer.length > 0)
-          expressions.push(b.literal(buffer));
-        buffer = '';
-      } else {
-        buffer += c;
-      }
-    } else if (c === '}') {
-      depth -= 1;
-      if (depth === 0) {
-        if (buffer.length > 0)
-          expressions.push(parseExpr(buffer));
-        buffer = '';
-      } else {
-        buffer += c;
-      }
-    } else {
-      buffer += c;
-    }
-  }
+  var nodes = compile2(compile1(str), scope || {});
 
-  if (depth > 0) {
-    throw new Error('missing }');
-  }
+  if (nodes.length === 0) return b.literal('');
 
-  if (buffer.length > 0)
-    expressions.push(b.literal(buffer));
-
-  expressions = expressions.filter(function(e) {
-    return !(e.type === 'Literal' && e.value === '');
-  });
-
-  if (expressions.length === 0)
-    return b.literal('');
-
-  return expressions.reduce(function(c, e) {
+  return nodes.reduce(function(c, e) {
     return b.binaryExpression('+', c, e);
   });
 }
 
-function parseExpr(src) {
+function compile1(str) {
+  if (!/[{}]/.exec(str)) return [b.literal(str)];
+
+  var depth = 0;
+  var nodes = [];
+  var m;
+  var buffer = '';
+
+  while ((m = /[{}]/.exec(str)) && str.length > 0) {
+    var chunk = str.substring(0, m.index);
+    switch (m[0]) {
+      case '{':
+        depth += 1;
+        if (depth === 1) {
+          buffer += chunk;
+          if (buffer.length > 0) nodes.push(b.literal(buffer));
+          buffer = '';
+        } else {
+          buffer += chunk + '{';
+        }
+        break;
+      case '}':
+        depth -= 1;
+        if (depth === 0) {
+          buffer += chunk;
+          if (buffer.length > 0) nodes.push(parseExpression(buffer));
+          buffer = '';
+        } else {
+          buffer += chunk + '}';
+        }
+        break;
+    }
+    str = str.substring(m.index + 1);
+  }
+
+  if (str.length > 0)
+    nodes.push(b.literal(str));
+
+  return nodes;
+}
+
+function compile2(nodes, scope) {
+  var toks = flatMap(nodes, function(expr) {
+    return expr.type === 'Literal' ? tokenize2(expr.value) : expr;
+  });
+  return parse2(toks, scope);
+}
+
+function tokenize2(str) {
+  if (!/[\(\),]/.exec(str)) return [str];
+
+  var m;
+  var toks = [];
+
+  while ((m = /[\(\),]/.exec(str)) && str.length > 0) {
+    if (m.index > 0) toks.push(str.substring(0, m.index));
+    toks.push(m[0]);
+    str = str.substring(m.index + m[0].length);
+  }
+
+  if (str.length > 0) toks.push(str);
+
+  return toks;
+}
+
+function parse2(toks, scope, incall) {
+  var state = null;
+  var nodes = [];
+
+  while (toks.length > 0) {
+    var tok = toks.shift();
+    var isstring = typeof tok === 'string';
+    switch (tok) {
+      case '(':
+        if (state === 'id') {
+          var args = parse2(toks, scope, true);
+          nodes.push(b.callExpression(b.identifier(nodes.pop().value), args));
+        } else if (state === 'var') {
+          nodes.pop();
+          var args = parse2(toks, scope, true);
+          if (!args[0]) {
+            throw new Error('unknown var(...) reference');
+          }
+          var node = b.memberExpression(b.identifier('vars'), args[0], true)
+          if (args[1]) {
+            node = b.logicalExpression('||', node, args[1]);
+          }
+          nodes.push(node);
+        } else {
+          nodes.push(b.literal(tok));
+        }
+        break;
+      case ',':
+        if (!incall) nodes.push(b.literal(tok));
+        break;
+      case ')':
+        state = undefined;
+        if (!incall) nodes.push(b.literal(tok));
+        if (incall) return nodes;
+        break;
+      default:
+        if (typeof tok === 'object') {
+          nodes.push(tok)
+        } else {
+          tok = incall ? normalize(tok) : tok;
+          if (tok === 'var') {
+            state = 'var';
+          } else if (scope[tok]) {
+            state = 'id';
+          }
+          if (!isstring || isstring && tok.length > 0) nodes.push(b.literal(tok));
+        }
+        break;
+    }
+  }
+
+  if (incall) throw new Error('missing )');
+
+  return nodes;
+}
+
+function normalize(tok) {
+  return tok.trim ? tok.trim() : tok;
+}
+
+function parseExpression(src) {
   return recast.parse(src).program.body[0].expression;
 }
 
 module.exports = compile;
-module.exports.parseExpr = parseExpr;
+module.exports.parseExpression = parseExpression;

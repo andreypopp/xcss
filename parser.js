@@ -487,8 +487,7 @@ module.exports = function(css, options){
   function atrule() {
     if (css[0] != '@') return;
 
-    return atvars()
-      || atkeyframes()
+    return atkeyframes()
       || atmedia()
       || atmodule()
       || atsupports()
@@ -499,23 +498,6 @@ module.exports = function(css, options){
       || atdocument()
       || atpage()
       || athost();
-  }
-
-  /**
-   * Parse @vars.
-   */
-
-  function atvars() {
-    var pos = position();
-    var m = match(/^@vars[\n\t ]*/);
-
-    if (!m) return;
-    comments();
-
-    return pos({
-      type: 'vars',
-      declarations: declarations()
-    });
   }
 
   /**

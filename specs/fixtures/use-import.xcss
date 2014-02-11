@@ -1,5 +1,6 @@
 @import "./simple.xcss";
 
-body {
-  me: use-import;
+.i-just-imported-another-module {
+  message: hello;
+  message: var(x);
 }

@@ -1,3 +1,7 @@
+:root {
+  var-x: simple!;
+}
+
 body {
-  margin: auto;
+  width: {12 + 13}px;
 }

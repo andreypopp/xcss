@@ -5,7 +5,6 @@
 
 var fs          = require('fs');
 var compile     = require('./compiler');
-var objectModel = require('./object-model');
 
 require.extensions['.xcss'] = function(module, filename) {
   var src = fs.readFileSync(filename, 'utf8');
@@ -15,6 +14,5 @@ require.extensions['.xcss'] = function(module, filename) {
 };
 
 module.exports = compile;
-
-for (var k in objectModel)
-  module.exports[k] = objectModel[k];
+module.exports.om = require('./object-model');
+module.exports.runtime = require('./runtime');

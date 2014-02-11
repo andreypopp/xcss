@@ -2,4 +2,5 @@
 
 .i-just-imported-another-module {
   message: hello;
+  message: var(x);
 }

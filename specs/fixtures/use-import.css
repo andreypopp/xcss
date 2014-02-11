@@ -1,7 +1,8 @@
 body {
-  margin: auto;
+  width: 25px;
 }
 
-body {
-  me: use-import;
+.i-just-imported-another-module {
+  message: hello;
+  message: simple!;
 }

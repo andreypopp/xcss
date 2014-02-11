@@ -5,8 +5,8 @@
  * itself using @var directive.
  */
 
-@vars {
-  color: red;
+:root {
+  var-color: red;
 }
 
 body {

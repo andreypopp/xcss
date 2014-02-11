@@ -21,33 +21,36 @@ function Compiler(options) {
   this.options.xcssModulePath = this.options.xcssModulePath || 'xcss';
 
   this.moduleParameters = null;
-  this.variables = [];
-  this.requires = [buildRequire('xcss', this.options.xcssModulePath)];
+  this.localDeclarations = [makeDeclaration('vars', b.objectExpression([]))];
+  this.globalDeclarations = [makeRequire('xcss', this.options.xcssModulePath)];
   this.scope = {};
+  this.counter = 0;
 }
 util.inherits(Compiler, BaseCompiler);
 
+Compiler.prototype.uniqueName = function(prefix) {
+  return prefix + '$' + (this.counter++);
+}
+
 Compiler.prototype.compile = function(node){
   var stylesheet = this.stylesheet(node);
-  var requires = b.variableDeclaration('var', this.requires);
-  var vars = b.variableDeclaration('var', [buildDeclaration('vars', b.objectExpression(this.variables))]);
 
   if (this.moduleParameters) {
 
-    stylesheet = buildModule(
+    stylesheet = makeModule(
       this.moduleParameters,
-      [vars, b.returnStatement(stylesheet)]);
+      this.localDeclarations.concat(b.returnStatement(stylesheet)));
 
-    return recast.print(requires).code + '\n\n' +
+    return print(this.globalDeclarations) + '\n\n' +
       'module.exports = ' +
-      recast.print(stylesheet).code;
+      print(stylesheet);
 
   } else {
 
-    return recast.print(requires).code + '\n' +
-      recast.print(vars).code + '\n\n' +
+    return print(this.globalDeclarations) + '\n' +
+      print(this.localDeclarations) + '\n\n' +
       'module.exports = ' +
-      recast.print(stylesheet).code;
+      print(stylesheet);
   }
 };
 
@@ -58,7 +61,7 @@ Compiler.prototype.stylesheet = function(node){
   var rules = node.stylesheet.rules.map(this.visit).filter(Boolean);
 
   return b.callExpression(
-    b.identifier('xcss.stylesheet'),
+    b.identifier('xcss.om.stylesheet'),
     [b.identifier('vars')].concat(rules));
 };
 
@@ -74,7 +77,7 @@ Compiler.prototype.comment = function(node) {
  * Compile @require.
  */
 Compiler.prototype.require = function(node) {
-  this.requires.push(buildRequire(node.id, node.path));
+  this.globalDeclarations.push(makeRequire(node.id, node.path));
   this.scope[node.id] = true;
   return false;
 };
@@ -94,7 +97,7 @@ Compiler.prototype.module = function(node){
  * Compile CSS rule.
  */
 Compiler.prototype.rule = function(node){
-  var declarations = node.declarations.map(this.visit);
+  var declarations = node.declarations;
 
   // probably a call in rule position
   if (node.selectors.length === 1 && node.selectors[0].indexOf(' ') === -1) {
@@ -102,27 +105,23 @@ Compiler.prototype.rule = function(node){
     if (this.scope[getIdentifier(name)]) {
       return b.callExpression(
         b.identifier(name),
-        declarations);
+        declarations.map(this.visit));
+    } else if (name === ':root') {
+
+      declarations = declarations.filter(function(decl) {
+        if (/^var\-/.exec(decl.property)) {
+          this.localDeclarations.push(makeVar(toCamelCase(decl.property.slice(4)), decl.value));
+          return false;
+        }
+        return true;
+      }, this);
     }
   } 
 
   var selectors = node.selectors.map(b.literal);
   return b.callExpression(
-    b.identifier('xcss.rule'),
-    selectors.concat(declarations));
-};
-
-/**
- * Compile @vars.
- */
-Compiler.prototype.vars = function(node) {
-  var declarations = node.declarations.map(this.visit);
-
-  this.variables = this.variables.concat(flatMap(declarations, function(expr) {
-    return expr.properties;
-  }));
-
-  return false;
+    b.identifier('xcss.om.rule'),
+    selectors.concat(declarations.map(this.visit)));
 };
 
 /**
@@ -139,7 +138,7 @@ Compiler.prototype.declaration = function(node) {
       [value]);
   } else if (identifier === 'extend') {
     return b.callExpression(
-      b.identifier('xcss.extend'),
+      b.identifier('xcss.om.extend'),
       [value]);
   } else {
     return b.objectExpression([
@@ -169,9 +168,16 @@ Compiler.prototype.import = function(node) {
     ast = b.callExpression(ast, args);
   }
 
+  var name = this.uniqueName('import');
+
+  this.localDeclarations.push(makeDeclaration(name, ast));
+  this.localDeclarations.push(b.callExpression(
+        b.identifier('xcss.runtime.merge'),
+        [b.identifier('vars'), b.memberExpression(b.identifier(name), b.identifier('vars'), false)]));
+
   return b.callExpression(
-    b.identifier('xcss.import'),
-    [ast]);
+    b.identifier('xcss.om.import'),
+    [b.identifier(name)]);
 };
 
 function getIdentifier(name) {
@@ -182,22 +188,33 @@ function getIdentifier(name) {
   return identifier;
 }
 
-function buildModule(params, stmts) {
+function print(nodes) {
+  if (Array.isArray(nodes)) {
+    return nodes.map(function(node) { return recast.print(node).code }).join('\n');
+  } else {
+    return recast.print(nodes).code;
+  }
+}
+
+function makeModule(params, stmts) {
   var factory = b.functionExpression(null, params, b.blockStatement(stmts));
-  return b.callExpression(b.identifier('xcss.module'), [factory]);
+  return b.callExpression(b.identifier('xcss.om.module'), [factory]);
 }
 
-function buildRequire(id, path) {
+function makeRequire(id, path) {
   var expr = b.callExpression(b.identifier('require'), [b.literal(path)]);
-  return buildDeclaration(id, expr);
+  return makeDeclaration(id, expr);
+      
 }
 
-function buildDeclaration(id, expr) {
-  return b.variableDeclarator(b.identifier(id), expr);
+function makeVar(id, value) {
+  return b.assignmentExpression('=',
+    b.memberExpression(b.identifier('vars'), b.identifier(id), false),
+    b.literal(value));
 }
 
-function buildVarProp(id, expr) {
-  return b.property('init', b.literal(id), expr);
+function makeDeclaration(id, expr) {
+  return b.variableDeclaration('var', [b.variableDeclarator(b.identifier(id), expr)]);
 }
 
 module.exports = function(src, options) {

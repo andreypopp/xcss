@@ -1,5 +1,15 @@
-body {
+div,
+x {
   margin: 0;
+}
+
+pre-z,
+z {
+  message: x;
+}
+
+z {
+  hello: 'here';
 }
 
 @media condition {
@@ -7,7 +17,22 @@ body {
     width: 25px;
   }
 
-  div {
+  .a {
+    my: own;
+    hello: 'here';
+    message: x;
+  }
+
+  div,
+  x {
     width: 12px;
   }
+
+  x {
+    my: own;
+  }
+}
+
+x {
+  my: own;
 }

@@ -1,11 +1,31 @@
-body {
+div {
   margin: 0;
+}
+
+pre-z {
+  message: x;
+}
+
+z {
+  extend: pre-z;
+  hello: 'here';
 }
 
 @media condition {
   @import "./simple.xcss";
 
+  .a {
+    extend: z;
+    my: own;
+  }
+
   div {
     width: 12px;
   }
 }
+
+x {
+  extend: div;
+  my: own;
+}
+

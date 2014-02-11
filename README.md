@@ -341,8 +341,6 @@ called.
 
 ### `@require` directive
 
-### `@vars` directive
-
 ### `@module` directive
 
 ### `extend:` declaration

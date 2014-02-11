@@ -33,9 +33,9 @@ It compiles into the following JavaScript module which is essentially a CommonJS
     var xcss = require("xcss"),
         theme = require("some-pkg/theme");
 
-    module.exports = xcss.stylesheet(null,
-      xcss.import(require("./other-stylesheet.xcss")),
-      xcss.rule('.Component', {
+    module.exports = xcss.om.stylesheet(null,
+      xcss.om.import(require("./other-stylesheet.xcss")),
+      xcss.om.rule('.Component', {
         width: '12px',
         backgroundColor: theme.bgColor
       })

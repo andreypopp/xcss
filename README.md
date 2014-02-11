@@ -33,7 +33,7 @@ It compiles into the following JavaScript module which is essentially a CommonJS
     var xcss = require("xcss"),
         theme = require("some-pkg/theme");
 
-    module.exports = xcss.stylesheet(vars,
+    module.exports = xcss.stylesheet(null,
       xcss.import(require("./other-stylesheet.xcss")),
       xcss.rule('.Component', {
         width: '12px',

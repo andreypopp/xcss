@@ -14,5 +14,5 @@ require.extensions['.xcss'] = function(module, filename) {
 };
 
 module.exports = compile;
-module.exports.om = require('./object-model');
+module.exports.om = require('xcss-object-model');
 module.exports.runtime = require('./runtime');

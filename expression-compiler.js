@@ -3,10 +3,11 @@
  * XCSS expression compiler
  */
 
-var recast  = require('recast');
-var flatMap = require('flatmap');
-var utils   = require('./utils');
-var b       = recast.types.builders;
+var toCamelCase = require('to-camel-case');
+var recast      = require('recast');
+var flatMap     = require('flatmap');
+var utils       = require('./utils');
+var b           = recast.types.builders;
 
 function compile(str, scope) {
   if (!/[\(\){}]/.exec(str)) return b.literal(str);
@@ -102,6 +103,9 @@ function parse2(toks, scope, incall) {
           var args = parse2(toks, scope, true);
           if (!args[0]) {
             throw new Error('unknown var(...) reference');
+          }
+          if (args[0].type === 'Literal') {
+            args[0].value = toCamelCase(args[0].value);
           }
           var node = b.memberExpression(b.identifier('vars'), args[0], true)
           if (args[1]) {

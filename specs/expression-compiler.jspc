@@ -20,6 +20,14 @@ describe "expression compiler" {
     t("mod.calc(x), 12", {mod: true}) should == 'mod.calc("x") + "," + " 12"'
   }
 
+  it "compiles vars" {
+    t("var(x)") should == 'vars["x"]'
+    t("var(x, 12)") should == 'vars["x"] || "12"'
+    t("var(x-x)") should == 'vars["xX"]'
+    t("var({x})") should == 'vars[x]'
+    t("var({x}, 12)") should == 'vars[x] || "12"'
+  }
+
   it "should ignore function call if name isn't in scope" {
     t("calc()") should == '"calc" + "(" + ")"'
     t("calc(var(x))") should == '"calc" + "(" + vars["x"] + ")"'

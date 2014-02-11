@@ -6,7 +6,7 @@ install link:
 	@npm $@
 
 lint:
-	@$(BIN)/jshint *.js
+	@$(BIN)/jshint compiler.js expression-compiler.js index.js runtime.js utils.js
 
 test::
 	@$(BIN)/jspecs specs/*.jspc

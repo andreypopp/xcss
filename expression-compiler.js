@@ -112,7 +112,7 @@ function tokenize2(str) {
   var m;
   var toks = [];
 
-  while ((m = /[\(\),]/.exec(str)) && str.length > 0) {
+  while ((m = /[\(\), ]/.exec(str)) && str.length > 0) {
     if (m.index > 0) toks.push(str.substring(0, m.index));
     toks.push(m[0]);
     str = str.substring(m.index + m[0].length);
@@ -134,25 +134,23 @@ function parse2(toks, scope, incall) {
       case '(':
         var args;
         if (state === 'id') {
-          args = parse2(toks, scope, true);
+          args = normalizeArgs(parse2(toks, scope, true));
           nodes.push(callExpression(identifier(nodes.pop().value), args));
         } else if (state === 'var') {
           nodes.pop();
-          args = parse2(toks, scope, true);
-          if (!args[0]) {
-            throw new Error('unknown var(...) reference');
-          }
-          var node = memberExpression(identifier('vars'), args[0], true)
-          if (args[1]) {
-            node = logicalExpression('||', node, args[1]);
-          }
+          args = normalizeArgs(parse2(toks, scope, true));
+          var node = makeVarAccessor(args[0], args[1]);
           nodes.push(node);
         } else {
           nodes.push(literal(tok));
         }
         break;
       case ',':
-        if (!incall) nodes.push(literal(tok));
+        if (!incall) {
+          nodes.push(literal(tok));
+        } else {
+          nodes.push(undefined);
+        }
         break;
       case ')':
         state = undefined;
@@ -163,14 +161,19 @@ function parse2(toks, scope, incall) {
         if (typeof tok === 'object') {
           nodes.push(tok)
         } else {
-          tok = incall ? utils.trim(tok) : tok;
           if (tok === 'var') {
             state = 'var';
+            nodes.push(literal(tok));
           } else if (scope[utils.getIdentifier(tok)]) {
             state = 'id';
-          }
-          if (!isstring || isstring && tok.length > 0) {
             nodes.push(literal(tok));
+          } else if (!isstring || isstring && tok.length > 0) {
+            var last = nodes[nodes.length - 1];
+            if (last && last.type === 'Literal') {
+              last.value += tok;
+            } else {
+              nodes.push(literal(tok));
+            }
           }
         }
         break;
@@ -180,6 +183,23 @@ function parse2(toks, scope, incall) {
   if (incall) throw new Error('missing )');
 
   return nodes;
+}
+
+function makeVarAccessor(name, fallback) {
+  if (!name) {
+    throw new Error('unknown var(...) reference');
+  }
+  var node = memberExpression(identifier('vars'), name, true)
+  if (fallback) {
+    node = logicalExpression('||', node, fallback);
+  }
+  return node;
+}
+
+function normalizeArgs(nodes) {
+  return nodes.map(utils.trim).filter(function(node) {
+    return node && (node.type === 'Literal' && node.value.length > 0 || node.type !== 'Literal');
+  });
 }
 
 module.exports = compile;

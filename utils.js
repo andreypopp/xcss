@@ -3,7 +3,9 @@
 var recast  = require('recast');
 
 function trim(tok) {
-  return tok.trim ? tok.trim() : tok;
+  if (tok && tok.type === 'Literal' && tok.value.trim)
+    tok.value = tok.value.trim();
+  return tok;
 }
 
 function parseExpression(src) {

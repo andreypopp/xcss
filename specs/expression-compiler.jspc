@@ -8,9 +8,9 @@ function t(v, scope) {
 describe "expression compiler" {
 
   it "compiles a function call" {
+    t("calc(var(x), 12 px)", {calc: true}) should == 'calc(vars["x"], "12 px")'
     t("calc()", {calc: true}) should == 'calc()'
     t("calc(10, 20)", {calc: true}) should == 'calc("10", "20")'
-    t("calc(var(x), 12 px)", {calc: true}) should == 'calc(vars["x"], "12 px")'
     t("calc(12 px, var(x))", {calc: true}) should == 'calc("12 px", vars["x"])'
     t("calc(var(x, 10), 12 px)", {calc: true}) should == 'calc(vars["x"] || "10", "12 px")'
     t("calc({x})", {calc: true}) should == 'calc(x)'
@@ -18,6 +18,7 @@ describe "expression compiler" {
     t("calc(var({x}), {y})", {calc: true}) should == 'calc(vars[x], y)'
     t("calc(x), 12", {calc: true}) should == 'calc("x") + ", 12"'
     t("mod.calc(x), 12", {mod: true}) should == 'mod.calc("x") + ", 12"'
+    t("inset 0 var(border-thickness) var(highlight-color)") should == '"inset 0 " + vars["border-thickness"] + " " + vars["highlight-color"]'
   }
 
   it "compiles vars" {

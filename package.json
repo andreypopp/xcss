@@ -1,6 +1,6 @@
 {
   "name": "xcss",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Programmable stylesheets",
   "main": "index.js",
   "bin": "./bin/xcss",

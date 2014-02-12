@@ -15,7 +15,7 @@ from xCSS (a language, a superset of CSS) to JavaScript.
 
 A xCSS module looks like:
 
-    @import "./other-stylesheet.xcss";
+    @import "./other-stylesheet.css";
 
     @require "some-pkg/theme" as theme;
 
@@ -31,7 +31,7 @@ It compiles into the following JavaScript module which is essentially a CommonJS
         theme = require("some-pkg/theme");
 
     module.exports = xcss.om.stylesheet(null,
-      xcss.om.import(require("./other-stylesheet.xcss")),
+      xcss.om.import(require("./other-stylesheet.css")),
       xcss.om.rule('.Component', {
         width: '12px',
         backgroundColor: theme.bgColor
@@ -39,7 +39,7 @@ It compiles into the following JavaScript module which is essentially a CommonJS
     );
 
 Now to get the CSS string from that you just need to evaluate this module in
-Node, the module's value is a `xcss.Stylesheet` object which has `.toCSS()`
+Node, the module's value is a `xcss.om.Stylesheet` object which has `.toCSS()`
 method.
 
 ## Installation
@@ -53,7 +53,7 @@ Install via npm:
 After installation there's `xcss` command line utility, which generates a CSS
 from a given xCSS module:
 
-    % xcss ./index.xcss > bundle.css
+    % xcss ./index.css > bundle.css
 
 Run `xcss --help` to see more options:
 
@@ -75,11 +75,11 @@ xCSS modules are just Node modules but expressed in a different syntax. That
 basically means that you'll be able to require xCSS modules directly:
 
 
-    // this line is needed to install .xcss handle
+    // this line is needed to install .css handle
     require('xcss');
 
-    // require .xcss directly!
-    var stylesheet = require('./index.xcss');
+    // require .css directly!
+    var stylesheet = require('./index.css');
 
     // generate CSS and print it
     console.log(stylesheet.toCSS());
@@ -87,8 +87,8 @@ basically means that you'll be able to require xCSS modules directly:
 You can transform stylesheets in any way you want, for example, combine two
 stylsheets together:
 
-    var button = require('./button.xcss');
-    var select = require('./select.xcss');
+    var button = require('./button.css');
+    var select = require('./select.css');
 
     console.log(button.concat(select));
 
@@ -98,11 +98,11 @@ Since 3.28.0 version browserify has a new feature called [plugins][bp]. This
 allows you to run xcss along with browserify and extract references to
 stylesheets from your code, so you can write:
 
-    require('./styles.xcss');
+    require('./styles.css');
 
     ...
 
-and have `./styles.xcss` bundled in a resulted stylesheet bundle.
+and have `./styles.css` bundled in a resulted stylesheet bundle.
 
 The command-line usage of browserify + xcss looks like:
 
@@ -111,7 +111,7 @@ The command-line usage of browserify + xcss looks like:
 After running this you will have `bundle.js` and `bundle.css` created in the
 directory.
 
-If you use browserify programatically, then usage is as follows:
+If you use browserify programmatically, then usage is as follows:
 
     var fs = require('fs')
     var browserify = require('browserify')
@@ -121,5 +121,8 @@ If you use browserify programatically, then usage is as follows:
     var stream = b.bundle()
     stream.pipe(fs.createWriteStream('bundle.js'))
     stream.css.pipe(fs.createWriteStream('bundle.css'))
+
+As you can see, there's `stream.css` stream which you can pipe to the
+destination.
 
 [bp]: https://github.com/substack/node-browserify#plugins

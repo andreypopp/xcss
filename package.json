@@ -14,7 +14,8 @@
   "keywords": [
     "xcss",
     "css",
-    "preprocessor"
+    "preprocessor",
+    "browserify-plugin"
   ],
   "author": "Andrey Popp <8mayday@gmail.com>",
   "license": "MIT",

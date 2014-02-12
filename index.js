@@ -13,6 +13,14 @@ require.extensions['.xcss'] = require.extensions['.css'] = function(module, file
   module._compile(compiled, filename);
 };
 
-module.exports = compile;
+module.exports = function(input, options) {
+  if (typeof input.bundle === 'function' &&
+      typeof input.transform === 'function') {
+    var plugin = require('xcss-browserify');
+    return plugin(input, options);
+  }
+  return compile(input, options);
+}
+
 module.exports.om = require('xcss-object-model');
 module.exports.runtime = require('./runtime');

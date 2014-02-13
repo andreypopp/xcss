@@ -1,6 +1,7 @@
 "use strict";
 
 var recast  = require('recast');
+var escodegen = require('escodegen');
 
 function trim(tok) {
   if (tok && tok.type === 'Literal' && tok.value.trim)
@@ -23,9 +24,9 @@ function getIdentifier(name) {
 
 function print(nodes) {
   if (Array.isArray(nodes)) {
-    return nodes.map(function(node) { return recast.print(node).code }).join('\n');
+    return nodes.map(function(node) { return escodegen.generate(node) }).join('\n');
   } else {
-    return recast.print(nodes).code;
+    return escodegen.generate(nodes);
   }
 }
 

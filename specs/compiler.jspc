@@ -9,7 +9,7 @@ describe 'compiler' {
     it 'compiles to require(..) call' {
       compile(src) should not throw;
       var js = compile(src);
-      js should contain 'path = require("path")'
+      js should contain 'path = require'
     }
   }
 

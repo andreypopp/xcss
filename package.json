@@ -32,7 +32,8 @@
     "deep-freeze": "0.0.1",
     "xcss-object-model": "~0.5.1",
     "xcss-browserify": "~0.1.2",
-    "subarg": "0.0.1"
+    "subarg": "0.0.1",
+    "escodegen": "~1.2.0"
   },
   "devDependencies": {
     "jspecs": "~0.2.0",

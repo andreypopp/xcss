@@ -194,6 +194,38 @@ module.exports = function(css, options){
     // :
     if (!match(/^:\s*/)) return error("property missing ':'");
 
+
+    // XXX: A hack to parse { prop: {x} }
+    var tillEOL = /(.*)\n/.exec(css);
+    if (tillEOL && tillEOL[1].length > 0) {
+      var lEscCount = tillEOL[1].match(/{/g);
+      var rEscCount = tillEOL[1].match(/}/g);
+      lEscCount = lEscCount ? lEscCount.length : lEscCount; 
+      rEscCount = rEscCount ? rEscCount.length : rEscCount; 
+
+      if (lEscCount < rEscCount) {
+        var re = /^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^\)]*?\)|[^;])+)/;
+        var local = css.substring(0, tillEOL[1].lastIndexOf('}'));
+        var val = re.exec(local);
+        if (!val) return error('property missing value');
+        var str = val[0];
+        updatePosition(str);
+        css = css.slice(str.length);
+
+        var ret = pos({
+          type: 'declaration',
+          property: prop,
+          value: trim(str)
+        });
+
+        // ;
+        match(/^[;\s]*/);
+
+        return ret;
+      }
+    }
+    // XXX: End of hack
+
     // val
     var val = match(/^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^\)]*?\)|[^\n;])+)/);
     if (!val) return error('property missing value');

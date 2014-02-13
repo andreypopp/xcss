@@ -22,11 +22,17 @@ function getIdentifier(name) {
   return identifier;
 }
 
+function generate(node) {
+  return escodegen.generate(node);
+}
+
 function print(nodes) {
   if (Array.isArray(nodes)) {
-    return nodes.map(function(node) { return escodegen.generate(node) }).join('\n');
+    return nodes
+      .map(function(node) {return generate(node) })
+      .join('\n');
   } else {
-    return escodegen.generate(nodes);
+    return generate(nodes);
   }
 }
 

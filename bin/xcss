@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-var path      = require('path');
-var fs        = require('fs');
-var minimist  = require('minimist');
-var xcss      = require('../index');
-var compile   = require('../compiler');
+var path        = require('path');
+var fs          = require('fs');
+var subarg      = require('subarg');
+var toCamelCase = require('to-camel-case');
+var xcss        = require('../index');
+var compile     = require('../compiler');
 
-var argv = minimist(process.argv, {
+var argv = subarg(process.argv, {
   boolean: ['c', 'compile', 'h', 'help', 'object-model']
 });
 
@@ -25,11 +26,30 @@ if (!file || !fs.existsSync(file)) {
 file = path.resolve(file);
 
 if (argv['object-model']) {
+
   console.log(compile(fs.readFileSync(file, 'utf8')));
 } else {
+
   var stylesheet = require(file);
-  if (stylesheet.type === 'module')
+
+  if (stylesheet.type === 'module') {
     error(arg + " is a parametrized module and can't generate CSS");
+  }
+
+  var transforms = [].concat(argv.t).concat(argv.transform).filter(Boolean);
+
+  stylesheet = transforms.reduce(function(stylesheet, transform) {
+    var id = transform._ ? transform._[0] : transform;
+    var opts = {};
+    for (var k in transform) {
+      if (transform.hasOwnProperty(k) && k !== '_') {
+        opts[toCamelCase(k)] = transform[k];
+      }
+    }
+    transform = require(id);
+    return stylesheet.transform(transform, options);
+  }, stylesheet);
+
   console.log(stylesheet.toCSS({compress: argv.c || argv.compress}));
 }
 

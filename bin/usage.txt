@@ -4,6 +4,8 @@ Compile xCSS to CSS and print the result.
 
 Options:
 
+   -t, --transform  Apply a transform to a resulted stylesheet
+
     -c, --compress  Compress the resulted stylesheet
 
     --object-model  Print the result of translation from xCSS to JavaScript

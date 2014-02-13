@@ -1,0 +1,6 @@
+head,
+/* footer,
+*/body/*,
+nav */ {
+  foo: 'bar';
+}

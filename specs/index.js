@@ -13,7 +13,6 @@ describe('xcss functional tests', function() {
     fs.readdirSync(fixtures).forEach(function(fixture) {
       if (!/\.xcss$/.exec(fixture) || fixture === 'module.xcss') return;
 
-
       it(fixture, function() {
         var file = path.join(fixtures, fixture);
         var css = require(file).toCSS() + '\n';
@@ -33,6 +32,8 @@ describe('xcss functional tests', function() {
       it(fixture, function() {
         var file = path.join(fixtures, fixture);
         var css = require(file).toCSS() + '\n';
+        var out = fs.readFileSync(file + '.out', 'utf8');
+        assert.strictEqual(css, out);
       });
     });
   });

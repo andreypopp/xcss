@@ -1,0 +1,7 @@
+@page toc, index:blank {
+  color: green;
+}
+
+@page {
+  font-size: 16pt;
+}

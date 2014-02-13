@@ -30,7 +30,7 @@
     "flatmap": "0.0.3",
     "to-camel-case": "~0.2.0",
     "deep-freeze": "0.0.1",
-    "xcss-object-model": "~0.5.0",
+    "xcss-object-model": "~0.5.1",
     "xcss-browserify": "~0.1.2",
     "subarg": "0.0.1"
   },

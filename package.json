@@ -33,7 +33,8 @@
     "xcss-object-model": "~0.5.1",
     "xcss-browserify": "~0.1.2",
     "subarg": "0.0.1",
-    "escodegen": "~1.2.0"
+    "escodegen": "~1.2.0",
+    "resolve": "~0.6.1"
   },
   "devDependencies": {
     "jspecs": "~0.2.0",

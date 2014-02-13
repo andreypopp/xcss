@@ -5,6 +5,9 @@ var subarg      = require('subarg');
 var toCamelCase = require('to-camel-case');
 var xcss        = require('../index');
 var compile     = require('../compiler');
+var resolve     = require('resolve/lib/sync');
+
+var cwd = process.cwd();
 
 var argv = subarg(process.argv, {
   boolean: ['c', 'compile', 'h', 'help', 'object-model']
@@ -40,13 +43,13 @@ if (argv['object-model']) {
 
   stylesheet = transforms.reduce(function(stylesheet, transform) {
     var id = transform._ ? transform._[0] : transform;
-    var opts = {};
+    var options = {};
     for (var k in transform) {
       if (transform.hasOwnProperty(k) && k !== '_') {
-        opts[toCamelCase(k)] = transform[k];
+        options[toCamelCase(k)] = transform[k];
       }
     }
-    transform = require(id);
+    transform = require(resolve(id, {basedir: cwd}));
     return stylesheet.transform(transform, options);
   }, stylesheet);
 

@@ -11,10 +11,10 @@ lint:
 test:: test-unit test-functional
 
 test-unit::
-	@$(BIN)/jspecs specs/*.jspc
+	@$(BIN)/jspecs -b -R spec specs/*.jspc
 
 test-functional::
-	@$(BIN)/mocha specs/*.js
+	@$(BIN)/mocha -b -R spec specs/*.js
 
 release-patch: test lint
 	@$(call release,patch)

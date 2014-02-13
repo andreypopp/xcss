@@ -89,6 +89,43 @@ Compiler.prototype.media = function(node){
 };
 
 /**
+ * Compile @supports
+ */
+Compiler.prototype.supports = function(node){
+  var rules = node.rules.map(this.visit).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.supports'),
+    [literal(node.supports)].concat(rules));
+};
+
+/**
+ * Compile @document
+ */
+Compiler.prototype.document = function(node){
+  var rules = node.rules.map(this.visit).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.document'),
+    [literal(node.document)].concat(rules));
+};
+
+/**
+ * Compile @keyframes
+ */
+Compiler.prototype.keyframes = function(node){
+  var keyframes = node.keyframes.map(this.visit).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.keyframes'),
+    [literal(node.name)].concat(keyframes));
+};
+
+/**
+ * Compile @host
+ */
+Compiler.prototype.host = function(node){
+  return false;
+};
+
+/**
  * Compile comment.
  */
 Compiler.prototype.comment = function(node) {
@@ -139,10 +176,32 @@ Compiler.prototype.rule = function(node){
     }
   } 
 
-  var selectors = node.selectors.map(literal);
+  var selectors = node.selectors.map(literal).filter(Boolean);
   return callExpression(
     identifier('xcss.om.rule'),
-    selectors.concat(declarations.map(this.visit)));
+    selectors.concat(declarations.map(this.visit).filter(Boolean)));
+};
+
+/**
+ * Compile CSS keyframe.
+ */
+Compiler.prototype.keyframe = function(node){
+  var declarations = node.declarations;
+  var values = node.values.map(literal).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.keyframe'),
+    values.concat(declarations.map(this.visit).filter(Boolean)));
+};
+
+/**
+ * Compile @page
+ */
+Compiler.prototype.page = function(node){
+  var declarations = node.declarations;
+  var selectors = node.selectors.map(literal).filter(Boolean);
+  return callExpression(
+    identifier('xcss.om.page'),
+    selectors.concat(declarations.map(this.visit).filter(Boolean)));
 };
 
 /**
@@ -151,13 +210,12 @@ Compiler.prototype.rule = function(node){
 Compiler.prototype.declaration = function(node) {
   var name = toCamelCase(node.property);
   var value = compileExpression(node.value, this.scope);
-  var id = utils.getIdentifier(name);
 
-  if (this.scope[id]) {
+  if (this.scope[utils.getIdentifier(name)]) {
     return callExpression(
       identifier(name),
       [value]);
-  } else if (id=== 'extend') {
+  } else if (name === 'extend') {
     return callExpression(
       identifier('xcss.om.extend'),
       [value]);
@@ -174,25 +232,44 @@ Compiler.prototype.declaration = function(node) {
  * Compile @import
  */
 Compiler.prototype.import = function(node) {
-  var ast = callExpression(
-    identifier('require'),
-    [literal(node.import)]);
+  if (node.require) {
+    var ast = callExpression(
+      identifier('require'),
+      [literal(node.require)]);
 
-  if (node.args) {
-    var args = utils.parseExpression('(' + node.args + ')');
-    args = args.expressions ? args.expressions : [args];
-    ast = callExpression(ast, args);
+    if (node.args) {
+      var args = utils.parseExpression('(' + node.args + ')');
+      args = args.expressions ? args.expressions : [args];
+      ast = callExpression(ast, args);
+    }
+
+    var name = this.uniqueName('import');
+
+    this.localDeclarations.push(makeDeclaration(name, ast));
+    this.localDeclarations.push(makeVarMerge([name]));
+
+    return callExpression(
+      identifier('xcss.om.import'),
+      [identifier(name)]);
+  } else if (node.import) {
+
+    return callExpression(
+      identifier('xcss.om.importReference'),
+      [literal(node.import)]);
   }
-
-  var name = this.uniqueName('import');
-
-  this.localDeclarations.push(makeDeclaration(name, ast));
-  this.localDeclarations.push(makeVarMerge([name]));
-
-  return callExpression(
-    identifier('xcss.om.import'),
-    [identifier(name)]);
 };
+
+Compiler.prototype.charset = function(node) {
+  return callExpression(
+    identifier('xcss.om.charset'),
+    [literal(node.charset)]);
+}
+
+Compiler.prototype.namespace = function(node) {
+  return callExpression(
+    identifier('xcss.om.namespace'),
+    [literal(node.namespace)]);
+}
 
 // xcss.om.module(function($params ...) { $stmts ... })
 function makeModule(params, stmts) {

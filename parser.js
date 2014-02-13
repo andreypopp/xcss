@@ -434,13 +434,18 @@ module.exports = function(css, options){
 
     var val = trim(m[1]);
     m = new RegExp('^"([^"]+)"( +with +(.+))?$').exec(val);
-    if (!m) return;
-
-    return pos({
-      type: 'import',
-      args: trim(m[3]),
-      import: trim(m[1])
-    });
+    if (m) {
+      return pos({
+        type: 'import',
+        require: trim(m[1]),
+        args: trim(m[3])
+      });
+    } else {
+      return pos({
+        type: 'import',
+        import: val
+      });
+    }
   }
 
   /**

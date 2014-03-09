@@ -4,7 +4,7 @@ var fs          = require('fs');
 var subarg      = require('subarg');
 var toCamelCase = require('to-camel-case');
 var xcss        = require('../index');
-var compile     = require('../compiler');
+var compile     = require('../lib/compiler');
 var resolve     = require('resolve/lib/sync');
 
 var cwd = process.cwd();

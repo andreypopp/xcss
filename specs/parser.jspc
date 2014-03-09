@@ -1,4 +1,4 @@
-var parse = require('../parser');
+var parse = require('../lib/parser');
 
 describe 'parser' {
 

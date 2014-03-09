@@ -4,9 +4,10 @@
  */
 
 var fs          = require('fs');
-var compile     = require('./compiler');
+var compile     = require('./lib/compiler');
 
-require.extensions['.xcss'] = require.extensions['.css'] = function(module, filename) {
+require.extensions['.xcss'] =
+require.extensions['.css'] = function(module, filename) {
   var src = fs.readFileSync(filename, 'utf8');
   var options = {xcssModulePath: __filename};
   var compiled = compile(src, options);
@@ -23,4 +24,4 @@ module.exports = function(input, options) {
 }
 
 module.exports.om = require('xcss-object-model');
-module.exports.runtime = require('./runtime');
+module.exports.runtime = require('./lib/runtime');

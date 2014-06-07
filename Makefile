@@ -4,7 +4,11 @@ install link:
 	@npm $@
 
 lint:
-	@jshint index.js lib/*.js
+	@jshint index.js \
+		lib/compiler.js \
+		lib/expression-compiler.js \
+		lib/runtime.js \
+		lib/utils.js
 
 test:: test-unit test-functional
 
